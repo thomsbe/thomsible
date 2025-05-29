@@ -1,0 +1,4 @@
+---
+# OS-spezifische Variablen für Debian/Ubuntu
+sudo_group: sudo
+install_sudo_package: true

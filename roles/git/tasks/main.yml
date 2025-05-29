@@ -1,0 +1,67 @@
+---
+- name: Get target user information
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ target_user }}"
+  register: target_user_info
+
+- name: Set target user home directory
+  ansible.builtin.set_fact:
+    target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+
+- name: Display git installation info
+  ansible.builtin.debug:
+    msg: |
+      Installing and configuring git for:
+      - Target user: {{ target_user }}
+      - Home directory: {{ target_user_home }}
+
+- name: Install git package
+  ansible.builtin.package:
+    name: git
+    state: present
+
+- name: Check if git is already configured for target user
+  ansible.builtin.stat:
+    path: "{{ target_user_home }}/.gitconfig"
+  register: gitconfig_exists
+
+- name: Display git configuration status
+  ansible.builtin.debug:
+    msg: |
+      Git configuration status for {{ target_user }}:
+      - Git config exists: {{ gitconfig_exists.stat.exists }}
+      - Config file: {{ target_user_home }}/.gitconfig
+
+- name: Create basic git configuration for target user
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.gitconfig"
+    content: |
+      [user]
+          name = {{ target_user }}
+          email = {{ target_user }}@{{ ansible_hostname }}.local
+      [init]
+          defaultBranch = main
+      [pull]
+          rebase = false
+      [core]
+          editor = nano
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+  when: not gitconfig_exists.stat.exists
+
+- name: Verify git installation and configuration
+  ansible.builtin.shell: |
+    echo "=== Git Installation Verification ==="
+    echo "Git version: $(git --version)"
+    echo "Git config for {{ target_user }}:"
+    sudo -u {{ target_user }} git config --list --global 2>/dev/null || echo "No global config found"
+    echo "Config file ownership:"
+    ls -la {{ target_user_home }}/.gitconfig 2>/dev/null || echo "No config file found"
+  register: git_verification
+  changed_when: false
+
+- name: Display git verification results
+  ansible.builtin.debug:
+    var: git_verification.stdout_lines

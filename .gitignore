@@ -1,0 +1,179 @@
+# thomsible .gitignore
+# Keeps only the cool stuff, excludes secrets and temp files
+
+# =============================================================================
+# SECRETS & CREDENTIALS (NEVER COMMIT!)
+# =============================================================================
+# SSH Keys
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+*.pub
+
+# Ansible Vault files
+*vault*
+*secret*
+*password*
+*credential*
+
+# Environment files
+.env
+.env.*
+*.env
+
+# Token files
+*token*
+*auth*
+
+# =============================================================================
+# ANSIBLE TEMPORARY FILES
+# =============================================================================
+# Ansible retry files
+*.retry
+
+# Ansible facts cache
+fact_cache/
+facts.d/
+
+# Ansible collections cache
+collections/
+
+# Ansible temporary directories
+.ansible/
+ansible.log
+
+# =============================================================================
+# TESTING & DEVELOPMENT
+# =============================================================================
+# Test playbooks (we cleaned these up already)
+test_*.yml
+*_test.yml
+
+# Temporary test files
+temp/
+tmp/
+.tmp/
+
+# Development notes
+notes.md
+TODO.md
+scratch.md
+
+# =============================================================================
+# PYTHON & UV (for our pyproject.toml)
+# =============================================================================
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# UV lock file (keep pyproject.toml, ignore lock)
+# uv.lock  # Actually, let's keep this for reproducible builds
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =============================================================================
+# DOCKER & CONTAINERS
+# =============================================================================
+# Docker override files
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Container logs
+*.log
+
+# =============================================================================
+# EDITOR & IDE FILES
+# =============================================================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# Windsurf (Codeium editor)
+.windsurf/
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.Trash-*
+
+# =============================================================================
+# BACKUP & ARCHIVE FILES
+# =============================================================================
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.tar.gz
+*.zip
+*.7z
+
+# =============================================================================
+# WHAT WE WANT TO KEEP (explicitly documented)
+# =============================================================================
+# ✅ Ansible roles and playbooks
+# ✅ Configuration files (ansible.cfg, pyproject.toml)
+# ✅ Documentation (README.md, docs/)
+# ✅ Inventories (but not with real IPs/secrets)
+# ✅ Group variables (but not secrets)
+# ✅ Requirements files
+# ✅ Docker compose for testing
+# ✅ This .gitignore file
+
+# =============================================================================
+# CUSTOM EXCLUSIONS
+# =============================================================================
+# Local inventory with real servers (keep template)
+inventories/production/
+inventories/real/
+inventories/live/
+
+# Local configuration overrides
+local_config.yml
+override.yml
+
+# Personal notes
+personal/
+private/

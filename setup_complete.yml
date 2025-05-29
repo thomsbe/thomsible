@@ -1,0 +1,25 @@
+---
+# Komplettes Setup: Ansible-Benutzer + SSH-Keys für Ziel-Benutzer
+- name: "Phase 1: Setup thomsible user (as root)"
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - thomsible_user
+
+- name: "Phase 2: Configure target user SSH access"
+  hosts: all
+  become: true
+  gather_facts: false
+  roles:
+    - ssh_keys
+    
+  post_tasks:
+    - name: Final verification summary
+      ansible.builtin.debug:
+        msg: |
+          ✅ Setup completed for {{ inventory_hostname }}:
+          - Ansible user: thomsible (for automation)
+          - Target user: {{ target_user }} (for configuration)
+          - SSH access configured for both users
+          - Password login disabled where appropriate

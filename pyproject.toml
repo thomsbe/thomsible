@@ -1,0 +1,11 @@
+[project]
+name = "thomsible"
+version = "0.1.0"
+description = "Ansible Rollen für Desktop- und Server-Systeme, getestet mit Molecule und Docker."
+requires-python = ">=3.10"
+dependencies = [
+    "ansible",
+]
+
+[tool.uv]
+# uv-spezifische Konfigurationen können hier ergänzt werden

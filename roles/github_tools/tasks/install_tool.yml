@@ -1,0 +1,84 @@
+---
+# Install a single GitHub tool
+# Variables:
+# - tool_name: Name of the tool (e.g., "lazygit")
+# - tool_config: Configuration dict from github_tools_available
+
+- name: "Display installation info for {{ tool_name }}"
+  ansible.builtin.debug:
+    msg: |
+      Installing {{ tool_name }}:
+      - Repository: {{ tool_config.repo }}
+      - Description: {{ tool_config.description }}
+      - Asset pattern: {{ tool_config.asset_pattern }}
+
+- name: "Get latest {{ tool_name }} release information from GitHub API"
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
+    method: GET
+    return_content: yes
+  register: tool_release_info
+
+- name: "Extract latest version and download URL for {{ tool_name }}"
+  ansible.builtin.set_fact:
+    tool_version: "{{ tool_release_info.json.tag_name }}"
+    tool_download_url: "{{ tool_release_info.json.assets | selectattr('name', 'match', tool_config.asset_pattern) | map(attribute='browser_download_url') | first }}"
+
+- name: "Display version information for {{ tool_name }}"
+  ansible.builtin.debug:
+    msg: |
+      Installing {{ tool_name }} {{ tool_version }}
+      Download URL: {{ tool_download_url }}
+
+- name: "Create temporary download directory for {{ tool_name }}"
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: "_{{ tool_name }}"
+  register: temp_dir
+
+- name: "Download {{ tool_name }} archive"
+  ansible.builtin.get_url:
+    url: "{{ tool_download_url }}"
+    dest: "{{ temp_dir.path }}/{{ tool_name }}.{{ tool_config.archive_extension }}"
+    mode: '0644'
+
+- name: "Extract {{ tool_name }} archive"
+  ansible.builtin.unarchive:
+    src: "{{ temp_dir.path }}/{{ tool_name }}.{{ tool_config.archive_extension }}"
+    dest: "{{ temp_dir.path }}"
+    remote_src: yes
+
+- name: "Find {{ tool_name }} binary in extracted archive"
+  ansible.builtin.find:
+    paths: "{{ temp_dir.path }}"
+    patterns: "{{ tool_name }}"
+    recurse: yes
+    file_type: file
+  register: found_binary
+
+- name: "Install {{ tool_name }} binary"
+  ansible.builtin.copy:
+    src: "{{ found_binary.files[0].path }}"
+    dest: "{{ target_user_home }}/local/bin/{{ tool_name }}"
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+    remote_src: yes
+
+- name: "Clean up temporary directory for {{ tool_name }}"
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+
+- name: "Verify {{ tool_name }} installation"
+  ansible.builtin.shell: |
+    echo "✅ {{ tool_name }} installed successfully"
+    echo "Binary: {{ target_user_home }}/local/bin/{{ tool_name }}"
+    ls -la {{ target_user_home }}/local/bin/{{ tool_name }}
+    echo "Version: $(sudo -u {{ target_user }} {{ target_user_home }}/local/bin/{{ tool_name }} --version 2>/dev/null | head -1 || echo 'Version check not supported')"
+  register: tool_verification
+  changed_when: false
+
+- name: "Display {{ tool_name }} verification results"
+  ansible.builtin.debug:
+    var: tool_verification.stdout_lines

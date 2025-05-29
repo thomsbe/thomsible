@@ -1,0 +1,6 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - thomsible_user
+    # Weitere Rollen hier eintragen
