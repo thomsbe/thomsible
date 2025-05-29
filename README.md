@@ -46,7 +46,57 @@ docker exec -it debian11 bash
 - **`git`**: Installiert und konfiguriert Git für Ziel-Benutzer
 
 ### GitHub-Tool-Rollen
-- **`github_tools`**: Meta-Rolle für GitHub-basierte Tools (lazygit, btop, fzf)
+- **`github_tools`**: Meta-Rolle für moderne CLI-Tools von GitHub und System-Tools
+
+## Installierte Tools
+
+### GitHub-basierte CLI-Tools
+Die `github_tools` Rolle installiert automatisch die neuesten Versionen folgender Tools:
+
+#### Git & Development
+- **`lazygit`**: Interaktives Git-Interface im Terminal
+- **`starship`**: Moderner, anpassbarer Shell-Prompt
+
+#### System Monitoring & Process Management
+- **`procs`**: Moderner `ps` Ersatz mit besserer Darstellung
+- **`duf`**: Moderner `df` Ersatz für Festplattenspeicher-Anzeige
+- **`gping`**: Ping mit grafischer Darstellung
+
+#### File & Text Tools
+- **`bat`**: Moderner `cat` Ersatz mit Syntax-Highlighting (alias: `cat`)
+- **`eza`**: Moderner `ls` Ersatz mit Icons und Git-Status (alias: `ls`)
+- **`fd`**: Moderner `find` Ersatz - schneller und benutzerfreundlicher
+- **`ripgrep`**: Extrem schneller `grep` Ersatz für Code-Suche
+- **`dust`**: Moderner `du` Ersatz für Verzeichnisgrößen-Analyse
+
+#### Navigation & History
+- **`zoxide`**: Intelligenter `cd` Ersatz mit Lernfähigkeit (alias: `cd`)
+- **`mcfly`**: Intelligente Shell-History mit Kontext-Suche
+
+#### Documentation & Help
+- **`tealdeer`**: Schneller `tldr` Client für praktische Befehlsbeispiele
+
+#### Network & System Tools
+- **`dog`**: Moderner `dig` Ersatz für DNS-Abfragen
+- **`termshark`**: Terminal-basierter Wireshark für Netzwerk-Analyse
+
+#### System Management
+- **`topgrade`**: Universeller System-Updater für alle Package Manager (alias: `tg`)
+
+### System-Tools (via Package Manager)
+- **`ncdu`**: Interaktive Festplattenspeicher-Analyse
+- **`lshw`**: Hardware-Informationen anzeigen
+- **`mtr`**: Kombiniert ping und traceroute
+- **`glances`**: System-Monitoring Dashboard
+- **`dstat`**: Live System-Statistiken
+- **`magic-wormhole`**: Sichere Dateiübertragung zwischen Geräten
+- **`unp`**: Universeller Archiv-Extraktor
+
+### Shell-Konfiguration
+- **Fish Shell**: Als Standard-Shell für target_user
+- **PATH-Konfiguration**: Automatische Integration aller Tools
+- **Aliases**: Moderne Ersetzungen für klassische Unix-Tools
+- **Starship Prompt**: Mit benutzerdefinierter Konfiguration
 
 ### Inventories
 - **`inventories/docker/hosts`**: Für initiales Setup (als root)
@@ -68,10 +118,30 @@ docker exec -it debian11 bash
    ansible-playbook -i inventories/docker/hosts_thomsible setup_complete_with_tools.yml
    ```
 
-### Weitere GitHub-Tools hinzufügen
-Erweitere die Meta-Rolle `github_tools`:
+### Einzelne Tools installieren
+Installiere nur bestimmte GitHub-Tools:
 ```sh
-# Neue Tools in roles/github_tools/defaults/main.yml hinzufügen
-# Dann einfach zur Tool-Liste hinzufügen:
-ansible-playbook -i inventories/docker/hosts_thomsible -e "github_tools_to_install=[lazygit,btop,fzf,bat]" test_github_tools.yml
+# Nur bestimmte Tools installieren:
+ansible-playbook -i inventories/docker/hosts_thomsible -e "github_tools_to_install=[lazygit,starship,topgrade]" site.yml --tags github_tools
+
+# Alle Tools installieren:
+ansible-playbook -i inventories/docker/hosts_thomsible site.yml --tags github_tools
+```
+
+### Tool-Nutzung nach Installation
+Nach der Installation sind alle Tools über den PATH verfügbar:
+```sh
+# Neue Shell starten für PATH-Aktivierung:
+bash -l
+# oder
+fish
+
+# Beispiel-Nutzung:
+lazygit          # Git-Interface
+starship         # Prompt anzeigen
+tg               # System-Updates (topgrade alias)
+bat README.md    # Datei mit Syntax-Highlighting
+eza -la          # Verzeichnis-Listing mit Icons
+fd "*.yml"       # Dateien finden
+rg "ansible"     # Text in Dateien suchen
 ```

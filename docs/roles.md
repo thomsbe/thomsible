@@ -72,26 +72,57 @@
 ---
 
 #### `github_tools`
-**Zweck**: Meta-Rolle für GitHub-basierte Tools
+**Zweck**: Meta-Rolle für moderne CLI-Tools von GitHub und System-Tools
 
 **Features**:
-- Installiert mehrere GitHub-Tools in einem Durchgang
-- Konfigurierbare Tool-Liste über Variablen
-- Einheitliches Pattern für alle GitHub-Tools
-- Batch-Installation mit zusammengefasster Verifikation
+- Installiert 17 moderne CLI-Tools automatisch
+- GitHub-Tools: Lädt neueste Releases von GitHub API
+- System-Tools: Installiert via Package Manager und pip
+- Automatische PATH-Konfiguration für alle Tools
+- Shell-Aliases für moderne Ersetzungen klassischer Unix-Tools
+- Starship-Prompt-Konfiguration
 
-**Standard-Tools**:
-- **lazygit**: Terminal UI für Git
-- **btop**: Moderner System-Monitor
-- **fzf**: Command-line fuzzy finder
+**GitHub-Tools (12 Tools)**:
+- **lazygit**: Interaktives Git-Interface
+- **starship**: Moderner Shell-Prompt
+- **procs**: Moderner `ps` Ersatz
+- **duf**: Moderner `df` Ersatz
+- **gping**: Ping mit grafischer Darstellung
+- **bat**: Moderner `cat` Ersatz (alias: `cat`)
+- **eza**: Moderner `ls` Ersatz (alias: `ls`)
+- **fd**: Moderner `find` Ersatz
+- **ripgrep**: Extrem schneller `grep` Ersatz
+- **dust**: Moderner `du` Ersatz
+- **zoxide**: Intelligenter `cd` Ersatz (alias: `cd`)
+- **mcfly**: Intelligente Shell-History
+- **tealdeer**: Schneller `tldr` Client
+- **dog**: Moderner `dig` Ersatz
+- **termshark**: Terminal-Wireshark
+- **topgrade**: System-Updater (alias: `tg`)
+
+**System-Tools (7 Tools)**:
+- **ncdu**: Interaktive Festplattenspeicher-Analyse
+- **lshw**: Hardware-Informationen
+- **mtr**: Kombiniert ping und traceroute
+- **glances**: System-Monitoring Dashboard
+- **dstat**: Live System-Statistiken
+- **magic-wormhole**: Sichere Dateiübertragung (via pip)
+- **unp**: Universeller Archiv-Extraktor (via pip)
 
 **Variablen**:
 - `target_user`: Ziel-Benutzer (pro Host konfiguriert)
-- `github_tools_to_install`: Liste der zu installierenden Tools
+- `github_tools_to_install`: Liste der zu installierenden GitHub-Tools
 - `github_tools_available`: Konfiguration aller verfügbaren Tools
+- `github_token`: Optional für höhere API-Rate-Limits
 
-**Erweiterung**:
-Neue Tools können einfach in `defaults/main.yml` hinzugefügt werden.
+**Installation**:
+- GitHub-Tools: `$HOME/local/bin/` (automatisch im PATH)
+- System-Tools: Standard-Paketpfade
+- Aliases: Fish und Bash Shell-Konfiguration
+
+**Abhängigkeiten**:
+- `user_config` Rolle für PATH-Konfiguration
+- GitHub API-Zugang (optional mit Token für höhere Limits)
 
 ## Konzepte
 

@@ -98,9 +98,9 @@ github_tools_available:
 
   # Practical command examples
   tealdeer:
-    repo: "dbrgn/tealdeer"
-    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
-    archive_extension: "tar.gz"
+    repo: "tealdeer-rs/tealdeer"
+    asset_pattern: "^tealdeer-linux-x86_64-musl$"
+    archive_extension: "binary"
     description: "Practical command examples"
     alias: "tldr" # Optional: tldr command
 
@@ -115,7 +115,7 @@ github_tools_available:
   # Ping with graph
   gping:
     repo: "orf/gping"
-    asset_pattern: ".*linux-x86_64.tar.gz$"
+    asset_pattern: "^gping-Linux-gnu-x86_64.tar.gz$"
     archive_extension: "tar.gz"
     description: "Ping with graph"
     # No alias - specialized tool
@@ -136,6 +136,14 @@ github_tools_available:
     description: "Terminal Wireshark"
     # No alias - specialized tool
 
+  # System upgrade tool
+  topgrade:
+    repo: "topgrade-rs/topgrade"
+    asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+    archive_extension: "tar.gz"
+    description: "System upgrade tool"
+    alias: "tg" # Alias for quick access
+
 # Standard-Tools die installiert werden sollen (kann überschrieben werden)
 github_tools_to_install:
   - lazygit
@@ -143,11 +151,11 @@ github_tools_to_install:
   - fzf
 
 # Erweiterte Tools (können durch Überschreibung von github_tools_to_install aktiviert werden)
-# Alle verfügbaren GitHub Tools (16):
-# github_tools_to_install: [lazygit, btop, fzf, bat, fd, eza, rg, dust, procs, zoxide, starship, mcfly, tealdeer, duf, gping, dog, termshark]
+# Alle verfügbaren GitHub Tools (17):
+# github_tools_to_install: [lazygit, btop, fzf, bat, fd, eza, rg, dust, procs, zoxide, starship, mcfly, tealdeer, duf, gping, dog, termshark, topgrade]
 #
 # Kategorien:
-# - System: btop, procs, duf, dust
+# - System: btop, procs, duf, dust, topgrade
 # - Files: bat, fd, eza, rg
 # - Navigation: fzf, zoxide
 # - Development: lazygit, starship

@@ -18,6 +18,14 @@
       - Install path: {{ target_user_home }}/local/bin/
       - Tools to install: {{ github_tools_to_install | join(', ') }}
 
+- name: Install required packages for archive extraction
+  ansible.builtin.package:
+    name:
+      - unzip
+      - tar
+      - gzip
+    state: present
+
 - name: Create local bin directory for target user
   ansible.builtin.file:
     path: "{{ target_user_home }}/local/bin"

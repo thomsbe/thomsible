@@ -10,8 +10,7 @@
       - mtr           # Network tracing (traceroute + ping)
       - glances       # System monitoring
       - dstat         # System statistics
-      - magic-wormhole # Secure file transfer
-      - unp           # Universal unpacker
+      - python3-pip   # For Python tools
     state: present
     update_cache: yes
   when: ansible_os_family == "Debian"
@@ -24,10 +23,17 @@
       - mtr           # Network tracing (traceroute + ping)
       - glances       # System monitoring
       - dstat         # System statistics
-      - magic-wormhole # Secure file transfer
-      - unp           # Universal unpacker
+      - python3-pip   # For Python tools
     state: present
   when: ansible_os_family == "RedHat"
+
+- name: "Install Python tools via pip"
+  ansible.builtin.pip:
+    name:
+      - magic-wormhole  # Secure file transfer
+      - unp             # Universal unpacker
+    state: present
+    executable: pip3
 
 - name: "Verify system tools installation"
   ansible.builtin.shell: |
@@ -63,7 +69,7 @@
     echo "- mtr google.com - Network tracing"
     echo "- glances - System monitoring"
     echo "- dstat - Live system stats"
-    echo "- wormhole send file.txt - Send file"
+    echo "- wormhole send file.txt - Send file securely"
     echo "- unp archive.zip - Extract any archive"
 
     echo "=== System Tools Verification Complete ==="

@@ -17,6 +17,8 @@
     url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
     method: GET
     return_content: yes
+    headers:
+      Authorization: "token {{ github_token | default('') }}"
   register: tool_release_info
 
 - name: "Extract latest version and download URL for {{ tool_name }}"
@@ -47,6 +49,15 @@
     src: "{{ temp_dir.path }}/{{ tool_name }}.{{ tool_config.archive_extension }}"
     dest: "{{ temp_dir.path }}"
     remote_src: yes
+  when: tool_config.archive_extension != "binary"
+
+- name: "Handle {{ tool_name }} binary file"
+  ansible.builtin.copy:
+    src: "{{ temp_dir.path }}/{{ tool_name }}.{{ tool_config.archive_extension }}"
+    dest: "{{ temp_dir.path }}/{{ tool_name }}"
+    mode: '0755'
+    remote_src: yes
+  when: tool_config.archive_extension == "binary"
 
 - name: "Find {{ tool_name }} binary in extracted archive"
   ansible.builtin.find:
@@ -55,6 +66,14 @@
     recurse: yes
     file_type: file
   register: found_binary
+  when: tool_config.archive_extension != "binary"
+
+- name: "Set {{ tool_name }} binary path for direct binary"
+  ansible.builtin.set_fact:
+    found_binary:
+      files:
+        - path: "{{ temp_dir.path }}/{{ tool_name }}"
+  when: tool_config.archive_extension == "binary"
 
 - name: "Install {{ tool_name }} binary"
   ansible.builtin.copy:
