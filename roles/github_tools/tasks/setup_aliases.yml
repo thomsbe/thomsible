@@ -50,13 +50,23 @@
     create: yes
   when: tools_with_aliases | length > 0
 
+- name: "Create starship config directory"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+  when: "'starship' in github_tools_to_install"
+
 - name: "Setup starship configuration"
-  ansible.builtin.template:
-    src: starship.toml.j2
+  ansible.builtin.copy:
+    src: starship.toml
     dest: "{{ target_user_home }}/.config/starship.toml"
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'
+    backup: yes
   when: "'starship' in github_tools_to_install"
 
 - name: "Initialize starship in bash"

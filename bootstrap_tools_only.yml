@@ -1,11 +1,17 @@
 ---
-# Vereinfachtes Bootstrap Playbook - nur Tools installieren
-# Dieses Playbook installiert nur die GitHub-Tools und Konfiguration
-# ohne einen separaten Ansible-Benutzer zu erstellen.
+# Tools-Only Bootstrap Playbook - Alle Tools ohne Ansible-User
+# Dieses Playbook installiert ALLE verfügbaren GitHub-Tools und Konfiguration
+# ohne einen separaten Ansible-Benutzer oder SSH-Konfiguration zu erstellen.
+#
+# Unterschied zu bootstrap_local.yml:
+# - Keine thomsible_user Rolle (kein Ansible-Benutzer)
+# - Keine ssh_keys Rolle (keine SSH-Konfiguration)
+# - Aber ALLE 18 GitHub Tools werden installiert
 #
 # Verwendung:
-#   ansible-playbook bootstrap_tools_only.yml
-#   ansible-playbook bootstrap_tools_only.yml -e "target_user=thomas"
+#   ./bootstrap.sh --tools-only
+#   ansible-playbook bootstrap_tools_only.yml --ask-become-pass
+#   ansible-playbook bootstrap_tools_only.yml -e "target_user=thomas" --ask-become-pass
 
 - name: "Install modern CLI tools locally"
   hosts: localhost
@@ -17,7 +23,7 @@
     # Ziel-Benutzer (Standard: echter Benutzer, nicht sudo-Benutzer)
     target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
 
-    # Minimale Tool-Auswahl für schnelle Installation
+    # Vollständige Tool-Auswahl (alle verfügbaren GitHub Tools)
     github_tools_to_install:
       - lazygit      # Git Terminal UI
       - starship     # Modern prompt
@@ -25,8 +31,18 @@
       - fzf          # Fuzzy finder
       - bat          # Better cat
       - eza          # Better ls
-      - ripgrep      # Better grep
       - fd           # Better find
+      - ripgrep      # Better grep
+      - dust         # Better du
+      - procs        # Better ps
+      - zoxide       # Smart cd
+      - mcfly        # AI history search
+      - tealdeer     # Fast man pages
+      - duf          # Better df
+      - gping        # Ping with graph
+      - dog          # Better dig
+      - termshark    # Terminal Wireshark
+      - topgrade     # System updater
 
     # Aliases für bessere UX
     github_tools_create_aliases: true
@@ -38,14 +54,14 @@
     - name: "Display installation info"
       ansible.builtin.debug:
         msg: |
-          🛠️  MODERN CLI TOOLS INSTALLATION 🛠️
+          🛠️  COMPLETE CLI TOOLS INSTALLATION 🛠️
 
           Target user: {{ target_user }}
-          Tools to install: {{ github_tools_to_install | join(', ') }}
+          Tools to install: {{ github_tools_to_install | length }} modern CLI tools
           Installation path: ~/.local/bin
 
-          This is a lightweight installation that only installs
-          modern CLI tools without creating additional users.
+          This installs ALL available GitHub tools without creating
+          an Ansible user or SSH configuration (tools-only mode).
 
     - name: "Get target user information"
       ansible.builtin.getent:
@@ -66,25 +82,29 @@
     - name: "Installation completed"
       ansible.builtin.debug:
         msg: |
-          ✅ MODERN CLI TOOLS INSTALLED! ✅
+          ✅ ALL CLI TOOLS INSTALLED! ✅
 
-          📦 Installed tools:
-          {% for tool in github_tools_to_install %}
-          - {{ tool }}: {{ target_user_home }}/.local/bin/{{ tool }}
-          {% endfor %}
+          📦 Installed {{ github_tools_to_install | length }} modern tools:
+          System: btop, procs, duf, dust, topgrade
+          Files: bat, fd, eza, ripgrep
+          Navigation: fzf, zoxide
+          Development: lazygit, starship
+          Productivity: mcfly, tealdeer
+          Network: gping, dog, termshark
 
           🐚 Shell configuration:
           - Fish shell configured with PATH
           - Bash profile updated with PATH
           {% if github_tools_create_aliases %}
-          - Aliases: bat→cat, eza→ls
+          - Aliases: bat→cat, eza→ls, rg→grep
           {% endif %}
 
           🎨 Starship prompt configured with custom theme
 
           🚀 Quick start:
-          1. Restart your shell or run: source ~/.bashrc
-          2. Try: lazygit, btop, fzf, bat README.md
-          3. Use Ctrl+R for fuzzy history search (fzf)
+          1. Restart your shell: exec $SHELL
+          2. Try: lazygit, btop, mcfly, bat README.md
+          3. Use Ctrl+R for AI-powered history search (mcfly)
+          4. Use 'z' for smart directory jumping (zoxide)
 
-          💡 All tools are in ~/.local/bin and added to your PATH!
+          💡 All {{ github_tools_to_install | length }} tools are in ~/.local/bin and added to your PATH!
