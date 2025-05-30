@@ -4,6 +4,10 @@
 # - tool_name: Name of the tool (e.g., "lazygit")
 # - tool_config: Configuration dict from github_tools_available
 
+- name: "Check for existing installation conflicts for {{ tool_name }}"
+  ansible.builtin.include_tasks: check_existing_tools.yml
+  when: github_tools_check_conflicts | bool
+
 - name: "Get latest {{ tool_name }} release from GitHub API"
   ansible.builtin.uri:
     url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
@@ -48,7 +52,7 @@
 - name: "Find {{ tool_name }} binary in extracted archive"
   ansible.builtin.find:
     paths: "{{ temp_dir.path }}"
-    patterns: "{{ tool_name }}"
+    patterns: "{{ tool_config.binary_name | default(tool_name) }}"
     recurse: yes
     file_type: file
   register: found_binary
@@ -64,7 +68,7 @@
 - name: "Install {{ tool_name }} binary"
   ansible.builtin.copy:
     src: "{{ found_binary.files[0].path }}"
-    dest: "{{ target_user_home }}/local/bin/{{ tool_name }}"
+    dest: "{{ github_tools_full_path }}/{{ tool_config.binary_name | default(tool_name) }}"
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0755'

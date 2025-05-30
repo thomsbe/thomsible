@@ -17,14 +17,21 @@ id_ed25519*
 *password*
 *credential*
 
-# Environment files
+# Environment files (but keep examples and documentation)
 .env
-.env.*
-*.env
+.env.local
+.env.production
+.env.development
+.env.test
+# Keep: .env.example
 
-# Token files
-*token*
-*auth*
+# Token files (but keep documentation)
+*token.txt
+*token.json
+*token.yml
+*token.yaml
+.token
+# Keep: docs/*token*.md, *token*.example
 
 # =============================================================================
 # ANSIBLE TEMPORARY FILES
@@ -160,6 +167,8 @@ $RECYCLE.BIN/
 # ✅ Group variables (but not secrets)
 # ✅ Requirements files
 # ✅ Docker compose for testing
+# ✅ Example files (.env.example, *.example)
+# ✅ Documentation about tokens (docs/github-token.md)
 # ✅ This .gitignore file
 
 # =============================================================================

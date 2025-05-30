@@ -113,9 +113,73 @@ become_method=sudo
    ansible-playbook -i inventories/production/hosts_automation setup_complete_with_tools.yml
    ```
 
+## GitHub Tools Konfiguration
+
+### Installationspfad anpassen
+
+Der Standard-Installationspfad für GitHub-Tools ist `~/.local/bin` (Standard für Benutzer-Binaries):
+
+```yaml
+# group_vars/all.yml
+github_tools_install_path: ".local/bin"  # Standard (empfohlen)
+# github_tools_install_path: "local/bin"  # Alternative (alter Pfad)
+# github_tools_install_path: "bin"        # Direkt in HOME
+```
+
+### Konflikt-Erkennung
+
+Die Rolle verwendet `which -a` für eine vereinfachte und zuverlässige Konflikt-Erkennung:
+
+```yaml
+# group_vars/all.yml
+github_tools_check_conflicts: true   # Standard (empfohlen)
+github_tools_check_conflicts: false  # Deaktiviert (nicht empfohlen)
+```
+
+**Funktionsweise:**
+1. `which -a tool_name` findet alle Installationen
+2. Eigener Installationspfad wird herausgefiltert
+3. Bei Konflikten: Installation wird gestoppt mit detaillierter Fehlermeldung
+
+## GitHub API Token
+
+Für höhere GitHub API Rate-Limits kann ein Token auf verschiedene Weise konfiguriert werden:
+
+### Methode 1: Umgebungsvariable (Empfohlen)
+```bash
+# Token setzen
+export GITHUB_TOKEN=$(gh auth token)
+
+# Bootstrap ausführen
+./bootstrap.sh
+```
+
+### Methode 2: .env-Datei
+```bash
+# .env-Datei erstellen
+echo "GITHUB_TOKEN=$(gh auth token)" > .env
+
+# Bootstrap ausführen (Token wird automatisch erkannt)
+./bootstrap.sh
+```
+
+### Methode 3: GitHub CLI (Automatisch)
+```bash
+# GitHub CLI authentifizieren
+gh auth login
+
+# Token wird automatisch verwendet
+./bootstrap.sh
+```
+
+**Priorität**: Umgebungsvariable → .env-Datei → GitHub CLI
+
+**Sicherheit**: Tokens werden niemals in Git committet (automatisch durch .gitignore ausgeschlossen)
+
 ## Sicherheitshinweise
 
 - Verwenden Sie für jeden Ansible-Benutzer einen eigenen SSH-Key
 - Speichern Sie private SSH-Keys niemals in Git-Repositories
 - Nutzen Sie SSH-Agent oder Ansible Vault für Key-Management
 - Rotieren Sie SSH-Keys regelmäßig
+- GitHub Tokens niemals in Versionskontrolle speichern

@@ -28,6 +28,8 @@
 - **System-Tool-Integration**: Package Manager + pip für umfassende Tool-Sammlung
 - **Konfigurierbarer Ansible-Benutzer**: Flexibler Benutzername via `ansible_user_name`
 - **Kompakte Ausgaben**: Bereinigte Ansible-Tasks ohne unnötige Debug-Messages
+- **Konflikt-Erkennung**: Automatische Überprüfung auf bereits installierte Tools
+- **Sauberer Systemzustand**: Verhindert mehrfache Installationsquellen
 
 ### Testing
 - Docker-Container für 4 Distributionen (Debian 11/12, Ubuntu 24.04, Fedora 42)
@@ -53,6 +55,8 @@
 - ✅ GitHub API-Integration für automatische Updates
 - ✅ Konfigurierbarer Ansible-Benutzername implementiert
 - ✅ Kompakte Ansible-Ausgaben ohne Debug-Clutter
+- ✅ Konflikt-Erkennung für Tool-Installationen implementiert
+- ✅ Automatische Überprüfung auf bereits vorhandene Tools
 
 ---
 

@@ -8,6 +8,8 @@ Diese Meta-Rolle installiert mehrere GitHub-Tools automatisch basierend auf eine
 - **Einheitliches Pattern** für alle GitHub-basierten Tools
 - **Flexible Konfiguration** für verschiedene Archive-Formate und Binary-Strukturen
 - **Batch-Installation** mit zusammengefasster Verifikation
+- **Konflikt-Erkennung** verhindert Installationen bei bereits vorhandenen Tools
+- **Sauberer Systemzustand** durch Vermeidung mehrfacher Installationsquellen
 
 ## Verfügbare Tools
 
@@ -56,6 +58,21 @@ github_tools_to_install:
   - lazygit
   - btop
   - fzf
+```
+
+### `github_tools_install_path`
+Installationspfad für GitHub-Tools relativ zum Benutzer-Home (Standard: `.local/bin`)
+
+```yaml
+github_tools_install_path: ".local/bin"  # Standard-Pfad für Benutzer-Binaries
+# github_tools_install_path: "local/bin"  # Alternative (alter Pfad)
+```
+
+### `github_tools_check_conflicts`
+Aktiviert/deaktiviert die Überprüfung auf bereits installierte Tools (Standard: `true`)
+
+```yaml
+github_tools_check_conflicts: true  # Empfohlen für sauberen Systemzustand
 ```
 
 ### `github_tools_available`
@@ -143,6 +160,46 @@ github_tools_available:
 - Beliebige Tool-Kombinationen
 - Einfache Anpassung pro Host/Gruppe
 - Unterstützung verschiedener Archive-Formate
+
+## Konflikt-Behandlung
+
+Die Rolle überprüft automatisch mit `which -a`, ob Tools bereits über andere Quellen installiert sind:
+
+### Vereinfachte Konflikt-Erkennung:
+- **`which -a` Analyse**: Findet alle Installationen eines Tools
+- **Pfad-Filterung**: Ignoriert den eigenen Installationspfad
+- **Intelligente Quellen-Erkennung**: Identifiziert Installationsquelle anhand des Pfads
+  - `/usr/bin/` → System package manager
+  - `/usr/local/bin/` → Manual installation
+  - `/snap/` → Snap package
+  - `/.local/bin/` → User installation
+
+### Bei Konflikten:
+1. **Installation wird gestoppt** mit detaillierter Fehlermeldung
+2. **Exakter Pfad wird angezeigt** wo das Tool bereits installiert ist
+3. **Spezifische Entfernungsanweisungen** basierend auf der Quelle
+4. **Alternative Optionen** werden vorgeschlagen
+
+### Konflikt-Überprüfung deaktivieren:
+```yaml
+# Nicht empfohlen - kann zu Systemkonflikten führen
+github_tools_check_conflicts: false
+```
+
+### Beispiel-Konfliktbehandlung:
+```bash
+# Tool bereits via apt installiert
+sudo apt remove btop
+
+# Tool bereits via snap installiert
+sudo snap remove lazygit
+
+# Tool bereits via pip installiert
+pip3 uninstall magic-wormhole
+
+# Dann Ansible erneut ausführen
+ansible-playbook -i inventory playbook.yml
+```
 
 ## Template für neue Tools
 

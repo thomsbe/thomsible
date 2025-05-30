@@ -8,3 +8,7 @@ thomsible_ssh_pubkey: "{{ ansible_user_ssh_pubkey }}"
 
 # Target user SSH key (for the user being configured)
 tbaer_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEhbo8YgdXrlEpXPd0FIaCvv9pDyX/pXhETvMSI8owG9 tbaer"
+
+# GitHub API token for higher rate limits
+# Priority: 1. GITHUB_TOKEN env var, 2. .env file, 3. manual config
+github_token: "{{ lookup('env', 'GITHUB_TOKEN') or lookup('file', '.env', errors='ignore') | regex_search('GITHUB_TOKEN=(.+)', '\\1') | first | default('') }}"

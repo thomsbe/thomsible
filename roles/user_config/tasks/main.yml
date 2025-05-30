@@ -56,31 +56,31 @@
     group: "{{ target_user }}"
     mode: '0755'
 
-- name: Add local/bin to PATH in fish config
+- name: Add .local/bin to PATH in fish config
   ansible.builtin.copy:
     dest: "{{ target_user_home }}/.config/fish/config.fish"
     content: |
-      # Add local bin to PATH for GitHub tools
-      if test -d $HOME/local/bin
-          set -gx PATH $HOME/local/bin $PATH
+      # Add .local/bin to PATH for GitHub tools
+      if test -d $HOME/.local/bin
+          set -gx PATH $HOME/.local/bin $PATH
       end
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'
 
-- name: Add local/bin to PATH in bash profile
+- name: Add .local/bin to PATH in bash profile
   ansible.builtin.lineinfile:
     path: "{{ target_user_home }}/.bashrc"
-    line: 'export PATH="$HOME/local/bin:$PATH"'
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
     create: yes
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'
 
-- name: Add local/bin to PATH in bash profile (alternative)
+- name: Add .local/bin to PATH in bash profile (alternative)
   ansible.builtin.lineinfile:
     path: "{{ target_user_home }}/.bash_profile"
-    line: 'export PATH="$HOME/local/bin:$PATH"'
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
     create: yes
     owner: "{{ target_user }}"
     group: "{{ target_user }}"

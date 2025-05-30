@@ -6,7 +6,7 @@
 {%   set tool_config = github_tools_available[tool_name] %}
 {%   if tool_config.alias is defined %}
 # {{ tool_config.description }}
-alias {{ tool_config.alias }} "{{ target_user_home }}/local/bin/{{ tool_name }}"
+alias {{ tool_config.alias }} "{{ tool_config.binary_name | default(tool_name) }}"
 
 {%   endif %}
 {% endfor %}
@@ -17,33 +17,31 @@ alias {{ tool_config.alias }} "{{ target_user_home }}/local/bin/{{ tool_name }}"
 {%   if tool_config.alias is defined %}
 {%     if tool_name == 'bat' %}
 # bat with paging disabled for small files
-alias batcat "{{ target_user_home }}/local/bin/bat --paging=never"
+alias batcat "bat --paging=never"
 
 {%     elif tool_name == 'eza' %}
 # eza with common options
-alias ll "{{ target_user_home }}/local/bin/eza -la --git"
-alias la "{{ target_user_home }}/local/bin/eza -a"
-alias lt "{{ target_user_home }}/local/bin/eza --tree"
+alias ll "eza -la --git"
+alias la "eza -a"
+alias lt "eza --tree"
 
-{%     elif tool_name == 'rg' %}
+{%     elif tool_name == 'ripgrep' %}
 # ripgrep with common options
-alias rg "{{ target_user_home }}/local/bin/rg"
-alias rgf "{{ target_user_home }}/local/bin/rg --files"
-alias rgi "{{ target_user_home }}/local/bin/rg --ignore-case"
+alias rgf "rg --files"
+alias rgi "rg --ignore-case"
 
 {%     elif tool_name == 'zoxide' %}
 # zoxide smart cd with initialization
-eval ({{ target_user_home }}/local/bin/zoxide init fish)
+eval (zoxide init fish)
 
 {%     elif tool_name == 'tealdeer' %}
 # tealdeer aliases
-alias tldr "{{ target_user_home }}/local/bin/tealdeer"
-alias help "{{ target_user_home }}/local/bin/tealdeer"
+alias tldr "tealdeer"
+alias help "tealdeer"
 
 {%     elif tool_name == 'dog' %}
 # dog DNS lookup aliases
-alias dog "{{ target_user_home }}/local/bin/dog"
-alias dns "{{ target_user_home }}/local/bin/dog"
+alias dns "dog"
 
 {%     endif %}
 {%   endif %}

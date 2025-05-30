@@ -17,9 +17,13 @@
       - gzip
     state: present
 
-- name: Create local bin directory for target user
+- name: Set GitHub tools installation path
+  ansible.builtin.set_fact:
+    github_tools_full_path: "{{ target_user_home }}/{{ github_tools_install_path }}"
+
+- name: Create GitHub tools directory for target user
   ansible.builtin.file:
-    path: "{{ target_user_home }}/local/bin"
+    path: "{{ github_tools_full_path }}"
     state: directory
     owner: "{{ target_user }}"
     group: "{{ target_user }}"

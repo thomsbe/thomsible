@@ -20,6 +20,81 @@ ansible_user_name: "automation"  # Statt "thomsible"
 ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... automation@company.com"
 ```
 
+## 🚀 Lokale Bootstrap-Installation
+
+### Ein-Klick Bootstrap mit Shell-Script
+
+Das einfachste Setup für neue Rechner:
+
+```bash
+# Repository klonen
+git clone https://github.com/thomsbe/thomsible.git
+cd thomsible
+
+# Bootstrap ausführen (installiert uv + Ansible + Tools)
+./bootstrap.sh
+
+# Oder nur Tools ohne Ansible-Benutzer
+./bootstrap.sh --tools-only
+
+# Für spezifischen Benutzer
+./bootstrap.sh --user thomas
+```
+
+**Was das Script macht:**
+1. **uv installieren** (moderner Python Package Manager)
+2. **Ansible installieren** (via uv)
+3. **GitHub Token setup** (Umgebungsvariable → .env → gh CLI)
+4. **Bootstrap-Playbook ausführen** (mit sudo-Passwort-Abfrage)
+5. **Sauberes Token-Management** (keine Commits nötig)
+
+### GitHub Token (für höhere API-Limits)
+```bash
+# Methode 1: Umgebungsvariable (empfohlen)
+export GITHUB_TOKEN=$(gh auth token)
+./bootstrap.sh
+
+# Methode 2: .env-Datei
+echo "GITHUB_TOKEN=$(gh auth token)" > .env
+./bootstrap.sh
+
+# Methode 3: GitHub CLI (automatisch)
+gh auth login
+./bootstrap.sh
+```
+
+### Manuelle Bootstrap-Playbooks
+
+Für neue Rechner gibt es auch direkte Ansible-Playbooks:
+
+#### Vollständiges Bootstrap
+```bash
+# Komplette Installation mit Ansible-Benutzer
+sudo ansible-playbook bootstrap_local.yml --ask-become-pass
+
+# Nur für aktuellen Benutzer (ohne Ansible-Benutzer)
+sudo ansible-playbook bootstrap_local.yml -e "skip_ansible_user=true" --ask-become-pass
+
+# Für spezifischen Benutzer
+sudo ansible-playbook bootstrap_local.yml -e "target_user=thomas" --ask-become-pass
+```
+
+#### Nur Tools installieren
+```bash
+# Schnelle Installation nur der CLI-Tools
+sudo ansible-playbook bootstrap_tools_only.yml --ask-become-pass
+
+# Für spezifischen Benutzer
+sudo ansible-playbook bootstrap_tools_only.yml -e "target_user=thomas" --ask-become-pass
+```
+
+**Was wird installiert:**
+- Moderne CLI-Tools (lazygit, starship, btop, fzf, bat, eza, etc.)
+- Fish shell mit PATH-Konfiguration
+- Git-Konfiguration
+- Shell-Aliases für bessere UX
+- Starship-Prompt mit Custom-Theme
+
 ## Struktur
 - `inventories/`: Enthält getrennte Inventories für Desktop, Server und Docker-Tests
 - `group_vars/`: Variablen für alle, Desktop oder Server (SSH-Keys, etc.)
