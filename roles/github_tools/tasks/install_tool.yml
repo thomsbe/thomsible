@@ -4,15 +4,7 @@
 # - tool_name: Name of the tool (e.g., "lazygit")
 # - tool_config: Configuration dict from github_tools_available
 
-- name: "Display installation info for {{ tool_name }}"
-  ansible.builtin.debug:
-    msg: |
-      Installing {{ tool_name }}:
-      - Repository: {{ tool_config.repo }}
-      - Description: {{ tool_config.description }}
-      - Asset pattern: {{ tool_config.asset_pattern }}
-
-- name: "Get latest {{ tool_name }} release information from GitHub API"
+- name: "Get latest {{ tool_name }} release from GitHub API"
   ansible.builtin.uri:
     url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
     method: GET
@@ -21,16 +13,10 @@
       Authorization: "token {{ github_token | default('') }}"
   register: tool_release_info
 
-- name: "Extract latest version and download URL for {{ tool_name }}"
+- name: "Extract version and download URL for {{ tool_name }}"
   ansible.builtin.set_fact:
     tool_version: "{{ tool_release_info.json.tag_name }}"
     tool_download_url: "{{ tool_release_info.json.assets | selectattr('name', 'match', tool_config.asset_pattern) | map(attribute='browser_download_url') | first }}"
-
-- name: "Display version information for {{ tool_name }}"
-  ansible.builtin.debug:
-    msg: |
-      Installing {{ tool_name }} {{ tool_version }}
-      Download URL: {{ tool_download_url }}
 
 - name: "Create temporary download directory for {{ tool_name }}"
   ansible.builtin.tempfile:
@@ -88,16 +74,3 @@
   ansible.builtin.file:
     path: "{{ temp_dir.path }}"
     state: absent
-
-- name: "Verify {{ tool_name }} installation"
-  ansible.builtin.shell: |
-    echo "✅ {{ tool_name }} installed successfully"
-    echo "Binary: {{ target_user_home }}/local/bin/{{ tool_name }}"
-    ls -la {{ target_user_home }}/local/bin/{{ tool_name }}
-    echo "Version: $(sudo -u {{ target_user }} {{ target_user_home }}/local/bin/{{ tool_name }} --version 2>/dev/null | head -1 || echo 'Version check not supported')"
-  register: tool_verification
-  changed_when: false
-
-- name: "Display {{ tool_name }} verification results"
-  ansible.builtin.debug:
-    var: tool_verification.stdout_lines

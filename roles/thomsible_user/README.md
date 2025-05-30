@@ -1,19 +1,21 @@
 # Rolle: thomsible_user
 
-Diese Rolle legt einen Nutzer `thomsible` an, richtet SSH-Key-Login ein und erlaubt passwortloses sudo.
+Diese Rolle legt einen konfigurierbaren Ansible-Benutzer an, richtet SSH-Key-Login ein und erlaubt passwortloses sudo.
 
 ## Features
-- Erstellt den User `thomsible` (falls nicht vorhanden)
+- Erstellt den Ansible-Benutzer (Name konfigurierbar, Standard: `thomsible`)
 - Automatische OS-Familie-Erkennung (Debian/Ubuntu vs RedHat/Fedora)
 - Installiert sudo-Paket bei Bedarf (Debian/Ubuntu)
 - Fügt User zur korrekten sudo-Gruppe hinzu (`sudo` oder `wheel`)
 - Legt SSH-Verzeichnis und `authorized_keys` an
-- Setzt den SSH-Public-Key aus der Variable `thomsible_ssh_pubkey`
+- Setzt den SSH-Public-Key aus der konfigurierten Variable
 - Konfiguriert passwortloses sudo
 - Sperrt Passwort-Login für diesen Nutzer
 
 ## Variablen
-- `thomsible_ssh_pubkey`: Der SSH-Public-Key für den Login (z.B. in `group_vars/all.yml` setzen)
+- `ansible_user_name`: Name des Ansible-Benutzers (Standard: "thomsible")
+- `ansible_user_ssh_pubkey`: Der SSH-Public-Key für den Login
+- `thomsible_ssh_pubkey`: Legacy-Variable (für Rückwärtskompatibilität)
 
 ## OS-spezifische Variablen
 Die Rolle lädt automatisch OS-spezifische Variablen:
@@ -22,7 +24,13 @@ Die Rolle lädt automatisch OS-spezifische Variablen:
 
 ## Beispiel für group_vars/all.yml
 ```yaml
-thomsible_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... user@host"
+# Standard-Konfiguration
+ansible_user_name: "thomsible"
+ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... user@host"
+
+# Oder mit anderem Benutzernamen
+ansible_user_name: "automation"
+ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... automation@company.com"
 ```
 
 ## Nutzung im Playbook

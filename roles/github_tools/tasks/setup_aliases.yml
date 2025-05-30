@@ -12,15 +12,6 @@
         list
       }}
 
-- name: "Display tools with aliases"
-  ansible.builtin.debug:
-    msg: |
-      Setting up aliases for {{ tools_with_aliases | length }} tools:
-      {% for tool in tools_with_aliases %}
-      - {{ tool.alias }} -> {{ github_tools_to_install[loop.index0] }} ({{ tool.description }})
-      {% endfor %}
-  when: tools_with_aliases | length > 0
-
 - name: "Create fish config directory"
   ansible.builtin.file:
     path: "{{ target_user_home }}/.config/fish/conf.d"
@@ -89,45 +80,3 @@
     group: "{{ target_user }}"
     create: yes
   when: "'starship' in github_tools_to_install"
-
-- name: "Display alias setup summary"
-  ansible.builtin.debug:
-    msg: |
-      ✅ Shell aliases configured successfully!
-
-      📁 Configuration files:
-      - Fish: {{ github_tools_fish_aliases_file }}
-      - Bash: {{ github_tools_bash_aliases_file }}
-
-      🔧 Configured aliases:
-      {% for tool in tools_with_aliases %}
-      - {{ tool.alias }} -> {{ github_tools_to_install[loop.index0] }}
-      {% endfor %}
-
-      {% if 'starship' in github_tools_to_install %}
-      🎨 Starship prompt configured:
-      - Custom Gruvbox theme with OS, Git, and language info
-      - Cross-shell support (Fish + Bash)
-      - Configuration: ~/.config/starship.toml
-      {% endif %}
-
-      💡 Usage:
-      - New shells will automatically load the aliases
-      - Current shells: source the alias files or restart shell
-
-      🚀 Modern CLI environment ready!
-  when: tools_with_aliases | length > 0
-
-- name: "Display no aliases message"
-  ansible.builtin.debug:
-    msg: |
-      ℹ️  No aliases configured
-
-      To enable aliases:
-      1. Set github_tools_create_aliases: true
-      2. Install tools with alias configuration (bat, eza)
-
-      Available tools with alias support:
-      - bat (replaces cat)
-      - eza (replaces ls)
-  when: tools_with_aliases | length == 0

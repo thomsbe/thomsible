@@ -1,3 +1,10 @@
 ---
-thomsible_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaQP9YHqJ3Lq8yrqPHOT6HyVsYhp/QhgGkyo8pQ6qlm thomsible"
+# Ansible automation user configuration
+ansible_user_name: "thomsible"  # Can be customized per environment
+ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaQP9YHqJ3Lq8yrqPHOT6HyVsYhp/QhgGkyo8pQ6qlm thomsible"
+
+# Legacy variable for backward compatibility
+thomsible_ssh_pubkey: "{{ ansible_user_ssh_pubkey }}"
+
+# Target user SSH key (for the user being configured)
 tbaer_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEhbo8YgdXrlEpXPd0FIaCvv9pDyX/pXhETvMSI8owG9 tbaer"

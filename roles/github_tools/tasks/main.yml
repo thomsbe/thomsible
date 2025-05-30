@@ -9,15 +9,6 @@
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
 
-- name: Display GitHub tools installation info
-  ansible.builtin.debug:
-    msg: |
-      Installing GitHub tools for:
-      - Target user: {{ target_user }}
-      - Home directory: {{ target_user_home }}
-      - Install path: {{ target_user_home }}/local/bin/
-      - Tools to install: {{ github_tools_to_install | join(', ') }}
-
 - name: Install required packages for archive extraction
   ansible.builtin.package:
     name:
@@ -42,36 +33,9 @@
   vars:
     tool_config: "{{ github_tools_available[tool_name] }}"
 
-- name: Install system tools (ncdu, etc.)
+- name: Install system tools
   ansible.builtin.include_tasks: install_system_tools.yml
 
 - name: Setup shell aliases for tools
   ansible.builtin.include_tasks: setup_aliases.yml
   when: github_tools_create_aliases | bool
-
-- name: Verify all installed tools
-  ansible.builtin.shell: |
-    echo "=== GitHub Tools Installation Summary ==="
-    echo "Installed tools in {{ target_user_home }}/local/bin/:"
-    ls -la {{ target_user_home }}/local/bin/ | grep -E "({{ github_tools_to_install | join('|') }})"
-    echo ""
-    echo "Tool versions:"
-    {% for tool in github_tools_to_install %}
-    if [ -f {{ target_user_home }}/local/bin/{{ tool }} ]; then
-      echo "{{ tool }}: $(sudo -u {{ target_user }} {{ target_user_home }}/local/bin/{{ tool }} --version 2>/dev/null | head -1 || echo 'Version check failed')"
-    fi
-    {% endfor %}
-    echo ""
-    echo "PATH configuration:"
-    echo "All tools are available via PATH (configured by user_config role)"
-    {% if github_tools_create_aliases %}
-    echo ""
-    echo "Shell aliases:"
-    echo "Aliases configured for modern command replacements"
-    {% endif %}
-  register: tools_summary
-  changed_when: false
-
-- name: Display installation summary
-  ansible.builtin.debug:
-    var: tools_summary.stdout_lines

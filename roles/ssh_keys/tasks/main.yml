@@ -9,13 +9,6 @@
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
 
-- name: Display SSH key configuration info
-  ansible.builtin.debug:
-    msg: |
-      Configuring SSH keys for target user: {{ target_user }}
-      Home directory: {{ target_user_home }}
-      Adding SSH key: {{ tbaer_ssh_pubkey.split()[2] if tbaer_ssh_pubkey.split()|length > 2 else 'tbaer' }}
-
 - name: Ensure .ssh directory exists for target user
   ansible.builtin.file:
     path: "{{ target_user_home }}/.ssh"
@@ -37,18 +30,3 @@
     password: '!'
   when: target_user != "root"  # Vorsicht bei root - nur wenn explizit gewünscht
 
-- name: Verify SSH key was added
-  ansible.builtin.shell: |
-    echo "=== SSH Configuration for {{ target_user }} ==="
-    echo "Authorized keys file:"
-    ls -la {{ target_user_home }}/.ssh/authorized_keys 2>/dev/null || echo "File not found"
-    echo "Number of keys:"
-    wc -l {{ target_user_home }}/.ssh/authorized_keys 2>/dev/null || echo "0"
-    echo "Password status:"
-    passwd -S {{ target_user }} 2>/dev/null || echo "Cannot check password status"
-  register: ssh_verification
-  changed_when: false
-
-- name: Display SSH verification results
-  ansible.builtin.debug:
-    var: ssh_verification.stdout_lines

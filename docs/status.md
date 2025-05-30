@@ -10,7 +10,7 @@
 ## Implementierte Features ✅
 
 ### Core-Rollen
-- **`thomsible_user`**: Ansible-Benutzer mit SSH und sudo
+- **`thomsible_user`**: Konfigurierbarer Ansible-Benutzer mit SSH und sudo
 - **`ssh_keys`**: SSH-Konfiguration für Ziel-Benutzer
 - **`user_config`**: Shell-Umgebung (fish) und PATH-Konfiguration
 - **`git`**: Git-Installation und Benutzer-Konfiguration
@@ -26,6 +26,8 @@
 - **GitHub-Tool-Meta-Rolle**: Vollständige moderne CLI-Umgebung (17 Tools)
 - **Shell-Integration**: Fish + Bash mit PATH, Aliases und Starship-Prompt
 - **System-Tool-Integration**: Package Manager + pip für umfassende Tool-Sammlung
+- **Konfigurierbarer Ansible-Benutzer**: Flexibler Benutzername via `ansible_user_name`
+- **Kompakte Ausgaben**: Bereinigte Ansible-Tasks ohne unnötige Debug-Messages
 
 ### Testing
 - Docker-Container für 4 Distributionen (Debian 11/12, Ubuntu 24.04, Fedora 42)
@@ -49,6 +51,8 @@
 - ✅ Vollständige moderne CLI-Tool-Sammlung (17 Tools)
 - ✅ Shell-Aliases und Starship-Prompt-Integration
 - ✅ GitHub API-Integration für automatische Updates
+- ✅ Konfigurierbarer Ansible-Benutzername implementiert
+- ✅ Kompakte Ansible-Ausgaben ohne Debug-Clutter
 
 ---
 

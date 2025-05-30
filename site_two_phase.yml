@@ -2,41 +2,29 @@
 # Zwei-Phasen-Deployment: Erst Benutzer anlegen, dann mit diesem Benutzer arbeiten
 
 # Phase 1: thomsible_user Rolle als root ausführen
-- name: "Phase 1: Create thomsible user (as root)"
+- name: "Phase 1: Create ansible user (as root)"
   hosts: all
   become: true
   gather_facts: true
   roles:
     - thomsible_user
 
-# Phase 2: Weitere Rollen als thomsible Benutzer ausführen
-- name: "Phase 2: Run additional roles (as thomsible user)"
+# Phase 2: Weitere Rollen als ansible Benutzer ausführen
+- name: "Phase 2: Run additional roles (as ansible user)"
   hosts: all
-  remote_user: thomsible
+  remote_user: "{{ ansible_user_name }}"
   become: false
   gather_facts: false
   tasks:
-    - name: Test that we are running as thomsible user
-      ansible.builtin.shell: |
-        echo "Current user: $(whoami)"
-        echo "Home directory: $HOME"
-        echo "Groups: $(groups)"
+    - name: Test ansible user access
+      ansible.builtin.command: whoami
       register: test_output_user
+      changed_when: false
 
-    - name: Test that we can use sudo
-      ansible.builtin.shell: |
-        echo "Sudo test: $(sudo whoami)"
-        echo "Sudo groups: $(sudo groups)"
-      register: test_output_sudo
+    - name: Test sudo access
+      ansible.builtin.command: whoami
       become: true
-
-    - name: Display user test results
-      ansible.builtin.debug:
-        var: test_output_user.stdout_lines
-
-    - name: Display sudo test results
-      ansible.builtin.debug:
-        var: test_output_sudo.stdout_lines
+      changed_when: false
 
     # Hier würden weitere Rollen stehen:
     # roles:

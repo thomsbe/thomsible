@@ -5,12 +5,20 @@ Dieses Projekt sammelt Ansible-Rollen, um Desktop- und Server-Systeme mit den gl
 ## Kernkonzepte
 
 ### Zwei-Benutzer-System
-- **Ausführender Benutzer**: `thomsible` (für Ansible-Verbindungen und Automatisierung)
+- **Ausführender Benutzer**: Konfigurierbar via `ansible_user_name` (Standard: `thomsible`)
 - **Ziel-Benutzer**: `target_user` (dessen Konfiguration angepasst wird, z.B. `root`, `thomas`)
 
 ### Zwei-Phasen-Deployment
 1. **Phase 1**: `thomsible_user` Rolle als root ausführen (Ansible-Benutzer anlegen)
-2. **Phase 2**: Weitere Rollen als `thomsible` mit sudo ausführen (Ziel-Benutzer konfigurieren)
+2. **Phase 2**: Weitere Rollen als Ansible-Benutzer mit sudo ausführen (Ziel-Benutzer konfigurieren)
+
+### Konfiguration des Ansible-Benutzers
+Der Name des Ansible-Benutzers kann über die Variable `ansible_user_name` angepasst werden:
+```yaml
+# group_vars/all.yml
+ansible_user_name: "automation"  # Statt "thomsible"
+ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... automation@company.com"
+```
 
 ## Struktur
 - `inventories/`: Enthält getrennte Inventories für Desktop, Server und Docker-Tests
@@ -100,7 +108,7 @@ Die `github_tools` Rolle installiert automatisch die neuesten Versionen folgende
 
 ### Inventories
 - **`inventories/docker/hosts`**: Für initiales Setup (als root)
-- **`inventories/docker/hosts_thomsible`**: Für weitere Rollen (als thomsible mit target_user)
+- **`inventories/docker/hosts_thomsible`**: Für weitere Rollen (als Ansible-Benutzer mit target_user)
 - **`inventories/desktop/hosts`**: Für Desktop-Systeme
 - **`inventories/server/hosts`**: Für Server-Systeme
 

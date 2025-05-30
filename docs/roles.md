@@ -5,17 +5,19 @@
 ### Core-Rollen
 
 #### `thomsible_user`
-**Zweck**: Erstellt den Ansible-Benutzer für Automatisierung
+**Zweck**: Erstellt den konfigurierbaren Ansible-Benutzer für Automatisierung
 
 **Features**:
-- Erstellt Benutzer `thomsible` mit SSH-Zugang
+- Erstellt Ansible-Benutzer mit konfigurierbarem Namen (Standard: `thomsible`)
 - Konfiguriert passwortloses sudo
 - OS-Familie-spezifische Gruppenzuweisung (sudo/wheel)
 - Installiert sudo-Paket bei Bedarf (Debian/Ubuntu)
-- Deaktiviert Passwort-Login für thomsible
+- Deaktiviert Passwort-Login für Ansible-Benutzer
 
 **Variablen**:
-- `thomsible_ssh_pubkey`: SSH-Public-Key für thomsible
+- `ansible_user_name`: Name des Ansible-Benutzers (Standard: "thomsible")
+- `ansible_user_ssh_pubkey`: SSH-Public-Key für Ansible-Benutzer
+- `thomsible_ssh_pubkey`: Legacy-Variable (Rückwärtskompatibilität)
 
 **OS-Unterstützung**: Debian, Ubuntu, RedHat, Fedora
 
@@ -167,7 +169,8 @@ server1 ansible_host=192.168.1.20 target_user=root
 ### SSH-Keys in group_vars
 ```yaml
 # group_vars/all.yml
-thomsible_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... thomsible"
+ansible_user_name: "thomsible"  # Oder anderer Name
+ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... ansible-user"
 tbaer_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... tbaer"
 ```
 
@@ -175,7 +178,7 @@ tbaer_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... tbaer"
 
 ### 1. Erstmaliges Setup
 ```bash
-# Als root - erstellt thomsible Benutzer
+# Als root - erstellt Ansible-Benutzer
 ansible-playbook -i inventories/docker/hosts site.yml
 
 # Komplettes Setup (thomsible_user + ssh_keys)
@@ -184,6 +187,6 @@ ansible-playbook -i inventories/docker/hosts_thomsible setup_complete.yml
 
 ### 2. Weitere Rollen
 ```bash
-# Als thomsible mit target_user
+# Als Ansible-Benutzer mit target_user
 ansible-playbook -i inventories/docker/hosts_thomsible weitere_rollen.yml
 ```

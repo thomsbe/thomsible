@@ -8,9 +8,10 @@
 ## Patterns und Best Practices
 
 ### Benutzer-Management
-- **Zwei-Benutzer-System**: Trennung von ausführendem Benutzer (`thomsible`) und Ziel-Benutzer (`target_user`)
+- **Zwei-Benutzer-System**: Trennung von ausführendem Benutzer (konfigurierbar via `ansible_user_name`) und Ziel-Benutzer (`target_user`)
 - **Zwei-Phasen-Deployment**: Erst Ansible-Benutzer anlegen, dann mit diesem arbeiten
 - **Pro-Host target_user**: Flexible Konfiguration je nach System (Server: `root`, Desktop: `thomas`)
+- **Konfigurierbarer Ansible-Benutzer**: Name über `ansible_user_name` anpassbar (Standard: "thomsible")
 
 ### Rollen-Design
 - **Eine Rolle pro Tool**: Jede Rolle installiert ein einzelnes Programm oder Tool

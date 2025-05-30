@@ -1,31 +1,12 @@
 ---
 # Komplettes Setup: Ansible-Benutzer + SSH-Keys + Git für Ziel-Benutzer
-- name: "Complete thomsible setup with git"
+- name: "Complete ansible setup with git"
   hosts: all
   become: true
   gather_facts: true
   roles:
     - thomsible_user  # Ansible-Benutzer anlegen
-    - ssh_keys        # SSH für Ziel-Benutzer konfigurieren  
+    - ssh_keys        # SSH für Ziel-Benutzer konfigurieren
     - git             # Git installieren und konfigurieren
-    
-  post_tasks:
-    - name: Final setup verification
-      ansible.builtin.debug:
-        msg: |
-          🎉 Complete setup finished for {{ inventory_hostname }}:
-          
-          ✅ Ansible automation:
-          - User: thomsible (SSH + sudo access)
-          
-          ✅ Target user configuration:
-          - User: {{ target_user }}
-          - SSH access configured
-          - Git installed and configured
-          
-          ✅ Ready for development work!
-          
-          Next steps:
-          - Clone repositories as {{ target_user }}
-          - Use git with pre-configured settings
-          - Deploy additional tools as needed
+
+

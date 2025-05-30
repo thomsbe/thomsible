@@ -1,0 +1,19 @@
+---
+# Beispiel für eine alternative Ansible-Benutzer-Konfiguration
+# Diese Datei zeigt, wie man einen anderen Benutzernamen verwenden kann
+
+# Ansible automation user configuration
+ansible_user_name: "automation"  # Alternativer Benutzername
+ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaQP9YHqJ3Lq8yrqPHOT6HyVsYhp/QhgGkyo8pQ6qlm automation"
+
+# Legacy variable for backward compatibility
+thomsible_ssh_pubkey: "{{ ansible_user_ssh_pubkey }}"
+
+# Target user SSH key (for the user being configured)
+tbaer_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEhbo8YgdXrlEpXPd0FIaCvv9pDyX/pXhETvMSI8owG9 tbaer"
+
+# Verwendung:
+# 1. Diese Datei nach group_vars/all.yml kopieren
+# 2. SSH-Keys entsprechend anpassen
+# 3. Inventory-Dateien aktualisieren (ansible_user={{ ansible_user_name }})
+# 4. Playbooks ausführen

@@ -1,6 +1,6 @@
 ---
 # Komplettes thomsible Setup: Benutzer + SSH + Shell + Git + GitHub-Tools
-- name: "Complete thomsible setup with all tools"
+- name: "Complete ansible setup with all tools"
   hosts: all
   become: true
   gather_facts: true
@@ -11,68 +11,4 @@
     - git             # Git installieren und konfigurieren
     - github_tools    # GitHub-Tools installieren (lazygit, btop, fzf)
 
-  post_tasks:
-    - name: Final verification of complete setup
-      ansible.builtin.shell: |
-        echo "🎉 === Complete thomsible Setup Verification ==="
 
-        echo "✅ Ansible user (thomsible):"
-        id thomsible
-
-        echo "✅ Target user ({{ target_user }}):"
-        id {{ target_user }}
-        getent passwd {{ target_user }} | cut -d: -f7
-
-        echo "✅ SSH configuration:"
-        ls -la {{ target_user_home }}/.ssh/authorized_keys
-
-        echo "✅ Shell configuration:"
-        if [ -f {{ target_user_home }}/.config/fish/config.fish ]; then
-            echo "Fish config exists and configured"
-        fi
-        grep "local/bin" {{ target_user_home }}/.bashrc || echo "Bash PATH not configured"
-
-        echo "✅ Git configuration:"
-        sudo -u {{ target_user }} git config --list --global | head -3
-
-        echo "✅ GitHub tools:"
-        ls -la {{ target_user_home }}/local/bin/
-
-        echo "✅ PATH test:"
-        sudo -u {{ target_user }} bash -c 'export PATH="$HOME/local/bin:$PATH" && which lazygit && which btop && which fzf'
-        sudo -u {{ target_user }} fish -c 'which lazygit && which btop && which fzf' 2>/dev/null || echo "Fish test skipped"
-
-        echo "🎯 === Setup Complete and Verified ==="
-      register: complete_verification
-
-    - name: Display complete verification results
-      ansible.builtin.debug:
-        var: complete_verification.stdout_lines
-
-    - name: Show final summary
-      ansible.builtin.debug:
-        msg: |
-          🎉 THOMSIBLE SETUP COMPLETE! 🎉
-
-          ✅ Infrastructure ready:
-          - Ansible automation user: thomsible
-          - Target user configured: {{ target_user }}
-          - SSH access secured and configured
-
-          ✅ Development environment:
-          - Fish shell installed and configured
-          - Git installed with user config
-          - PATH configured for GitHub tools
-
-          ✅ GitHub tools installed:
-          - lazygit: Terminal UI for Git
-          - btop: Modern system monitor
-          - fzf: Command-line fuzzy finder
-          - All tools accessible via PATH
-
-          🚀 Ready for development work!
-
-          Next steps:
-          1. Install additional GitHub tools using the lazygit template
-          2. Add more roles for specific development needs
-          3. Deploy to production systems

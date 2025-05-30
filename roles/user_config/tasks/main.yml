@@ -9,13 +9,6 @@
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
 
-- name: Display target user information
-  ansible.builtin.debug:
-    msg: |
-      Target user: {{ target_user }}
-      Home directory: {{ target_user_home }}
-      Executing as: {{ ansible_user_id }}
-
 - name: Create config directory for target user
   ansible.builtin.file:
     path: "{{ target_user_home }}/.config"
@@ -26,9 +19,9 @@
 
 - name: Create a sample config file for target user
   ansible.builtin.copy:
-    dest: "{{ target_user_home }}/.config/thomsible_managed"
+    dest: "{{ target_user_home }}/.config/ansible_managed"
     content: |
-      # This file was created by thomsible
+      # This file was created by ansible automation
       # Target user: {{ target_user }}
       # Managed by: {{ ansible_user_id }}
       # Date: {{ ansible_date_time.iso8601 }}
@@ -71,9 +64,6 @@
       if test -d $HOME/local/bin
           set -gx PATH $HOME/local/bin $PATH
       end
-
-      # Welcome message
-      echo "🐟 Fish shell configured by thomsible"
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'

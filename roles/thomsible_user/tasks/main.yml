@@ -8,37 +8,37 @@
     state: present
   when: install_sudo_package | bool
 
-- name: Ensure thomsible user exists
+- name: Ensure ansible user exists
   ansible.builtin.user:
-    name: thomsible
+    name: "{{ ansible_user_name }}"
     shell: /bin/bash
     groups: "{{ sudo_group }}"
     append: yes
     state: present
 
-- name: Ensure .ssh directory exists
+- name: Ensure .ssh directory exists for ansible user
   ansible.builtin.file:
-    path: /home/thomsible/.ssh
+    path: "/home/{{ ansible_user_name }}/.ssh"
     state: directory
-    owner: thomsible
-    group: thomsible
+    owner: "{{ ansible_user_name }}"
+    group: "{{ ansible_user_name }}"
     mode: '0700'
 
-- name: Set authorized key for thomsible
+- name: Set authorized key for ansible user
   ansible.builtin.authorized_key:
-    user: thomsible
+    user: "{{ ansible_user_name }}"
     state: present
-    key: "{{ thomsible_ssh_pubkey }}"
+    key: "{{ ansible_user_ssh_pubkey }}"
 
-- name: Allow thomsible passwordless sudo
+- name: Allow ansible user passwordless sudo
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/thomsible
-    content: "thomsible ALL=(ALL) NOPASSWD:ALL\n"
+    dest: "/etc/sudoers.d/{{ ansible_user_name }}"
+    content: "{{ ansible_user_name }} ALL=(ALL) NOPASSWD:ALL\n"
     owner: root
     group: root
     mode: '0440'
 
-- name: Ensure thomsible cannot login with password
+- name: Ensure ansible user cannot login with password
   ansible.builtin.user:
-    name: thomsible
+    name: "{{ ansible_user_name }}"
     password: '!'  # Sperrt Passwortlogin
