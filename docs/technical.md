@@ -41,17 +41,45 @@ roles/meine_rolle/
 ```yaml
 ---
 - name: Get target user information
-  ansible.builtin.getent:
-    database: passwd
-    key: "{{ target_user }}"
-  register: target_user_info
+  include_tasks: "{{ playbook_dir }}/roles/common/tasks/get_target_user_info.yml"
 
-- name: Set target user home directory
-  ansible.builtin.set_fact:
-    target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+# Verfügbare Variablen nach dem Include:
+# - target_user_home: Home-Verzeichnis des Benutzers
+# - target_user_group: Gruppen-ID der Hauptgruppe
+# - target_user_group_name: Name der Hauptgruppe
+
+- name: Create directory with correct permissions
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/example"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"  # Verwende IMMER target_user_group_name!
+    mode: '0755'
 
 - name: Include OS-specific variables
   ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+```
+
+### ⚠️ Wichtig: Korrekte Gruppenverwaltung
+
+**Problem:** Das direkte Verwenden von `group: "{{ target_user }}"` führt zu Fehlern, da der Benutzername nicht immer dem Gruppennamen entspricht.
+
+**Lösung:** Verwende immer `target_user_group_name` für Gruppenzuweisungen:
+
+```yaml
+# ❌ FALSCH - kann zu Fehlern führen
+- name: Create file
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/example"
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"  # Problematisch!
+
+# ✅ RICHTIG - verwendet die korrekte Hauptgruppe
+- name: Create file
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/example"
+    owner: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"  # Korrekt!
 
 # Weitere Tasks hier...
 ```
@@ -61,6 +89,49 @@ roles/meine_rolle/
 - Container für Debian 11, Debian 12, Ubuntu 24.04, Fedora 42
 - Inventory unter `inventories/docker/hosts_thomsible`
 - Playbook mit `ansible-playbook -i inventories/docker/hosts_thomsible test_rolle.yml` ausführen
+
+## Bootstrap-System
+
+Das Bootstrap-System ermöglicht die einfache Installation auf neuen Systemen mit intelligenter Ansible-Verwaltung.
+
+### uvx-Integration
+
+Das Bootstrap-Script nutzt moderne Tool-Management-Ansätze:
+
+1. **Ansible-Verfügbarkeit prüfen**: Zuerst wird geprüft, ob `ansible-playbook` bereits verfügbar ist
+2. **uvx-Unterstützung**: Falls uvx verfügbar ist, wird `uvx --from ansible ansible-playbook` verwendet
+3. **Fallback-Installation**: Nur wenn weder Ansible noch uvx verfügbar ist, wird Ansible mit `uv tool install` installiert
+
+```bash
+# uvx-Ausführung (bevorzugt)
+uvx --from ansible ansible-playbook playbook.yml
+
+# Fallback auf direkte Installation
+ansible-playbook playbook.yml
+```
+
+### Vorteile der uvx-Integration
+
+- **Keine permanente Installation**: uvx lädt Ansible temporär herunter
+- **Immer aktuelle Version**: Jeder Aufruf nutzt die neueste Ansible-Version
+- **Saubere Umgebung**: Keine Konflikte mit anderen Python-Paketen
+- **Automatischer Fallback**: Funktioniert auch mit bereits installiertem Ansible
+
+### pipx für Python-Tools
+
+Für Python-Tools wird pipx verwendet, um das "externally-managed-environment" Problem von Ubuntu 24.04+ zu lösen:
+
+```yaml
+- name: "Install pipx for Python tools"
+  ansible.builtin.package:
+    name: pipx
+    state: present
+
+- name: "Install Python tools via pipx"
+  ansible.builtin.shell: |
+    pipx install magic-wormhole
+    pipx install unp
+```
 
 ## Hinweise
 - Die Struktur ist bewusst einfach gehalten, um Erweiterungen und Wartung zu erleichtern.

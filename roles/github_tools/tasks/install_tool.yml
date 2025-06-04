@@ -70,7 +70,7 @@
     src: "{{ found_binary.files[0].path }}"
     dest: "{{ github_tools_full_path }}/{{ tool_config.binary_name | default(tool_name) }}"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
     remote_src: yes
 

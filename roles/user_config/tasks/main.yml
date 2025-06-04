@@ -5,16 +5,27 @@
     key: "{{ target_user }}"
   register: target_user_info
 
-- name: Set target user home directory
+- name: Set target user home directory and group
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+    target_user_group: "{{ target_user_info.ansible_facts.getent_passwd[target_user][2] }}"
+
+- name: Get target user group name
+  ansible.builtin.getent:
+    database: group
+    key: "{{ target_user_group }}"
+  register: target_user_group_info
+
+- name: Set target user group name
+  ansible.builtin.set_fact:
+    target_user_group_name: "{{ target_user_group_info.ansible_facts.getent_group.keys() | first }}"
 
 - name: Create config directory for target user
   ansible.builtin.file:
     path: "{{ target_user_home }}/.config"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: Create a sample config file for target user
@@ -26,7 +37,7 @@
       # Managed by: {{ ansible_user_id }}
       # Date: {{ ansible_date_time.iso8601 }}
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
 
 - name: Create tools directory for target user
@@ -34,7 +45,7 @@
     path: "{{ target_user_home }}/tools"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: Install fish shell
@@ -53,7 +64,7 @@
     path: "{{ target_user_home }}/.config/fish"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: Add .local/bin to PATH in fish config
@@ -65,7 +76,7 @@
           set -gx PATH $HOME/.local/bin $PATH
       end
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
 
 - name: Add .local/bin to PATH in bash profile
@@ -74,7 +85,7 @@
     line: 'export PATH="$HOME/.local/bin:$PATH"'
     create: yes
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
 
 - name: Add .local/bin to PATH in bash profile (alternative)
@@ -83,5 +94,5 @@
     line: 'export PATH="$HOME/.local/bin:$PATH"'
     create: yes
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'

@@ -1,20 +1,22 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+add_newline = true
+
 format = """
-[](color_orange)\
+[](color_orange)\
 $os\
 $username\
 $hostname\
 $localip\
-[](bg:color_yellow fg:color_orange)\
+[](bg:color_yellow fg:color_orange)\
 $directory\
-[](fg:color_yellow bg:color_aqua)\
+[](fg:color_yellow bg:color_aqua)\
 $git_branch\
 $git_status\
 $git_commit\
 $git_state\
 $git_metrics\
-[](fg:color_aqua bg:color_blue)\
+[](fg:color_aqua bg:color_blue)\
 $c\
 $rust\
 $golang\
@@ -29,25 +31,25 @@ $zig\
 $dart\
 $swift\
 $terraform\
-[](fg:color_blue bg:color_purple)\
+[](fg:color_blue bg:color_purple)\
 $docker_context\
 $kubernetes\
 $aws\
 $gcloud\
 $azure\
-[](fg:color_purple bg:color_bg3)\
+[](fg:color_purple bg:color_bg3)\
 $conda\
 $package\
 $memory_usage\
 $cmd_duration\
 $sudo\
-[](fg:color_bg3 bg:color_bg1)\
+[](fg:color_bg3 bg:color_bg1)\
 $jobs\
 $battery\
 $status\
 $shell\
 $time\
-[](fg:color_bg1)\
+[](fg:color_bg1)\
 $line_break$character"""
 
 palette = 'gruvbox_dark'
@@ -73,23 +75,25 @@ style = "bg:color_orange fg:color_fg0"
 [os.symbols]
 Windows = "󰍲"
 Ubuntu = "󰕈"
-SUSE = ""
+SUSE = ""
 Raspbian = "󰐿"
 Mint = "󰣭"
 Macos = "󰀵"
-Manjaro = ""
+Manjaro = ""
 Linux = "󰌽"
 Gentoo = "󰣨"
 Fedora = "󰣛"
-Alpine = ""
-Amazon = ""
-Android = ""
+Alpine = ""
+Amazon = ""
+Android = ""
 Arch = "󰣇"
 Artix = "󰣇"
-CentOS = ""
+EndeavourOS = ""
+CentOS = ""
 Debian = "󰣚"
 Redhat = "󱄛"
 RedHatEnterprise = "󱄛"
+Pop = ""
 
 [username]
 show_always = true
@@ -117,9 +121,9 @@ truncation_symbol = "…/"
 
 [directory.substitutions]
 "Documents" = "󰈙 "
-"Downloads" = " "
+"Downloads" = " "
 "Music" = "󰝚 "
-"Pictures" = " "
+"Pictures" = " "
 "Developer" = "󰲋 "
 
 [git_branch]
@@ -209,7 +213,7 @@ style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
 [docker_context]
-symbol = ""
+symbol = ""
 style = "bg:color_purple"
 format = '[[ $symbol( $context) ](fg:color_fg0 bg:color_purple)]($style)'
 
@@ -220,7 +224,7 @@ format = '[[ $symbol( $context) ](fg:color_fg0 bg:color_purple)]($style)'
 disabled = false
 
 [aws]
-symbol = ""
+symbol = "󰠅"
 style = "bg:color_purple"
 format = '[[ $symbol( $profile)( $region) ](fg:color_fg0 bg:color_purple)]($style)'
 
@@ -317,9 +321,9 @@ disabled = false
 
 [character]
 disabled = false
-success_symbol = '[](bold fg:color_green)'
-error_symbol = '[](bold fg:color_red)'
-vimcmd_symbol = '[](bold fg:color_green)'
-vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
-vimcmd_replace_symbol = '[](bold fg:color_purple)'
-vimcmd_visual_symbol = '[](bold fg:color_yellow)'
+success_symbol = '[➜](bold fg:color_green)'
+error_symbol = '[➜](bold fg:color_red)'
+vimcmd_symbol = '[➜](bold fg:color_green)'
+vimcmd_replace_one_symbol = '[➜](bold fg:color_purple)'
+vimcmd_replace_symbol = '[➜](bold fg:color_purple)'
+vimcmd_visual_symbol = '[➜](bold fg:color_yellow)'

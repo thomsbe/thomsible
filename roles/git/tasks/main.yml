@@ -5,9 +5,20 @@
     key: "{{ target_user }}"
   register: target_user_info
 
-- name: Set target user home directory
+- name: Set target user home directory and group
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+    target_user_group: "{{ target_user_info.ansible_facts.getent_passwd[target_user][2] }}"
+
+- name: Get target user group name
+  ansible.builtin.getent:
+    database: group
+    key: "{{ target_user_group }}"
+  register: target_user_group_info
+
+- name: Set target user group name
+  ansible.builtin.set_fact:
+    target_user_group_name: "{{ target_user_group_info.ansible_facts.getent_group.keys() | first }}"
 
 - name: Install git package
   ansible.builtin.package:
@@ -33,6 +44,6 @@
       [core]
           editor = nano
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
   when: not gitconfig_exists.stat.exists

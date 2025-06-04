@@ -20,6 +20,18 @@ ansible_user_name: "automation"  # Statt "thomsible"
 ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3Nza... automation@company.com"
 ```
 
+## ✨ Features
+
+- **🚀 uvx-Integration**: Nutzt uvx für Ansible-Ausführung wenn verfügbar, Fallback auf direkte Installation
+- **🔧 Automatische Tool-Installation**: 18 moderne CLI-Tools von GitHub Releases + System-Tools
+- **🛡️ Intelligente Konflikterkennung**: Erkennt bereits installierte Tools und vermeidet Duplikate
+- **👥 Korrekte Gruppenverwaltung**: Ermittelt automatisch die Hauptgruppe des Zielbenutzers
+- **🌍 Multi-OS-Unterstützung**: Debian/Ubuntu und RedHat/Fedora
+- **⚙️ Flexible Benutzer-Konfiguration**: Konfiguriert Tools für beliebige Benutzer
+- **🔗 GitHub API-Integration**: Lädt automatisch neueste Versionen mit Token-Unterstützung
+- **🐚 Shell-Integration**: Fish und Bash mit PATH-Konfiguration und Aliases
+- **🐍 pipx-Integration**: Python-Tools werden sicher via pipx installiert (Ubuntu 24.04+ kompatibel)
+
 ## 🚀 Lokale Bootstrap-Installation
 
 ### Ein-Klick Bootstrap mit Shell-Script
@@ -43,10 +55,12 @@ cd thomsible
 
 **Was das Script macht:**
 1. **uv installieren** (moderner Python Package Manager)
-2. **Ansible installieren** (via uv)
-3. **GitHub Token setup** (Umgebungsvariable → .env → gh CLI)
-4. **Bootstrap-Playbook ausführen** (mit sudo-Passwort-Abfrage)
-5. **Sauberes Token-Management** (keine Commits nötig)
+2. **Ansible-Verfügbarkeit prüfen** (bereits installiert oder uvx verfügbar)
+3. **uvx-Integration** (nutzt `uvx --from ansible ansible-playbook` wenn verfügbar)
+4. **GitHub Token setup** (Umgebungsvariable → .env → gh CLI)
+5. **Bootstrap-Playbook ausführen** (mit sudo-Passwort-Abfrage)
+6. **Korrekte Gruppenverwaltung** (ermittelt automatisch Hauptgruppe des Zielbenutzers)
+7. **pipx für Python-Tools** (Ubuntu 24.04+ kompatibel)
 
 ### GitHub Token (für höhere API-Limits)
 ```bash
@@ -89,11 +103,13 @@ sudo ansible-playbook bootstrap_tools_only.yml -e "target_user=thomas" --ask-bec
 ```
 
 **Was wird installiert:**
-- Moderne CLI-Tools (lazygit, starship, btop, fzf, bat, eza, etc.)
-- Fish shell mit PATH-Konfiguration
-- Git-Konfiguration
-- Shell-Aliases für bessere UX
-- Starship-Prompt mit Custom-Theme
+- **18 moderne CLI-Tools** (lazygit, starship, btop, fzf, bat, eza, fd, ripgrep, dust, procs, zoxide, mcfly, tealdeer, duf, gping, dog, termshark, topgrade)
+- **System-Tools** (ncdu, glances, mtr, dstat) via apt/dnf
+- **Python-Tools** (magic-wormhole, unp) via pipx
+- **Fish shell** mit PATH-Konfiguration
+- **Git-Konfiguration** mit sinnvollen Defaults
+- **Shell-Aliases** für bessere UX (bat→cat, eza→ls, etc.)
+- **Starship-Prompt** mit Custom-Theme
 
 ## Struktur
 - `inventories/`: Enthält getrennte Inventories für Desktop, Server und Docker-Tests

@@ -138,7 +138,7 @@ install_uv() {
 }
 
 install_ansible() {
-    log_info "Installiere Ansible mit uv..."
+    log_info "Überprüfe Ansible-Verfügbarkeit..."
 
     # Prüfe ob Ansible bereits verfügbar ist
     if command -v ansible-playbook &> /dev/null; then
@@ -146,8 +146,16 @@ install_ansible() {
         return 0
     fi
 
-    # Ansible mit uv installieren
-    log_info "Installiere Ansible..."
+    # Prüfe ob uvx funktioniert
+    log_info "Prüfe uvx-Verfügbarkeit..."
+    if command -v uvx &> /dev/null && uvx --version &> /dev/null; then
+        log_success "uvx ist verfügbar: $(uvx --version)"
+        log_info "Ansible wird über uvx ausgeführt (keine Installation erforderlich)"
+        return 0
+    fi
+
+    # Nur wenn weder Ansible noch uvx verfügbar ist, installiere Ansible
+    log_info "Weder Ansible noch uvx verfügbar - installiere Ansible mit uv..."
     if uv tool install ansible; then
         log_success "Ansible erfolgreich installiert"
 
@@ -218,8 +226,15 @@ cleanup_github_token() {
 run_ansible() {
     log_info "Führe Ansible Bootstrap aus..."
 
-    # Baue Ansible-Befehl zusammen
-    local ansible_cmd="ansible-playbook $PLAYBOOK"
+    # Baue Ansible-Befehl zusammen - verwende uvx wenn verfügbar
+    local ansible_cmd
+    if command -v uvx &> /dev/null && uvx --version &> /dev/null; then
+        ansible_cmd="uvx --from ansible ansible-playbook $PLAYBOOK"
+        log_info "Verwende uvx für Ansible-Ausführung"
+    else
+        ansible_cmd="ansible-playbook $PLAYBOOK"
+        log_info "Verwende direkt installiertes Ansible"
+    fi
 
     # Automatisch den echten Benutzer erkennen (nicht root bei sudo)
     local real_user="${SUDO_USER:-$USER}"

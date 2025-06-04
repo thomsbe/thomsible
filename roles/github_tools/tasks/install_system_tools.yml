@@ -27,10 +27,15 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: "Install Python tools via pip"
-  ansible.builtin.pip:
-    name:
-      - magic-wormhole  # Secure file transfer
-      - unp             # Universal unpacker
+- name: "Install pipx for Python tools"
+  ansible.builtin.package:
+    name: pipx
     state: present
-    executable: pip3
+
+- name: "Install Python tools via pipx"
+  ansible.builtin.shell: |
+    pipx install magic-wormhole
+    pipx install unp
+  register: pipx_install_result
+  failed_when: false
+  changed_when: "'already installed' not in pipx_install_result.stdout"

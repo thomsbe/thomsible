@@ -102,14 +102,18 @@
 - **termshark**: Terminal-Wireshark
 - **topgrade**: System-Updater (alias: `tg`)
 
-**System-Tools (7 Tools)**:
+**System-Tools (5 Tools via Package Manager)**:
 - **ncdu**: Interaktive Festplattenspeicher-Analyse
 - **lshw**: Hardware-Informationen
 - **mtr**: Kombiniert ping und traceroute
 - **glances**: System-Monitoring Dashboard
 - **dstat**: Live System-Statistiken
-- **magic-wormhole**: Sichere Dateiübertragung (via pip)
-- **unp**: Universeller Archiv-Extraktor (via pip)
+
+**Python-Tools (2 Tools via pipx)**:
+- **magic-wormhole**: Sichere Dateiübertragung
+- **unp**: Universeller Archiv-Extraktor
+
+**Hinweis:** pipx wird verwendet, um das "externally-managed-environment" Problem von Ubuntu 24.04+ zu lösen.
 
 **Variablen**:
 - `target_user`: Ziel-Benutzer (pro Host konfiguriert)
@@ -129,19 +133,27 @@
 ## Konzepte
 
 ### Target User Pattern
-Alle Rollen (außer `thomsible_user`) verwenden das Target User Pattern:
+Alle Rollen (außer `thomsible_user`) verwenden das Target User Pattern mit korrekter Gruppenverwaltung:
 
 ```yaml
 - name: Get target user information
-  ansible.builtin.getent:
-    database: passwd
-    key: "{{ target_user }}"
-  register: target_user_info
+  include_tasks: "{{ playbook_dir }}/roles/common/tasks/get_target_user_info.yml"
 
-- name: Set target user home directory
-  ansible.builtin.set_fact:
-    target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+# Verfügbare Variablen:
+# - target_user_home: Home-Verzeichnis des Benutzers
+# - target_user_group: Gruppen-ID der Hauptgruppe
+# - target_user_group_name: Name der Hauptgruppe (für Berechtigungen verwenden!)
 ```
+
+**Wichtig:** Verwende immer `target_user_group_name` für Gruppenzuweisungen, niemals `target_user`!
+
+### Neue common-Rolle
+
+Die `common`-Rolle stellt gemeinsame Tasks zur Verfügung:
+
+- **`get_target_user_info.yml`**: Ermittelt Benutzerinformationen inklusive korrekter Hauptgruppe
+- Löst das Problem der falschen Gruppenverwaltung
+- Sollte von allen target_user-aware Rollen verwendet werden
 
 ### OS-Familie-Unterstützung
 Rollen laden automatisch OS-spezifische Variablen:

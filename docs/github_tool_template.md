@@ -7,14 +7,7 @@ Dieses Template kann für die Installation von GitHub-basierten Tools verwendet 
 ```yaml
 ---
 - name: Get target user information
-  ansible.builtin.getent:
-    database: passwd
-    key: "{{ target_user }}"
-  register: target_user_info
-
-- name: Set target user home directory
-  ansible.builtin.set_fact:
-    target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+  include_tasks: "{{ playbook_dir }}/roles/common/tasks/get_target_user_info.yml"
 
 - name: Display TOOLNAME installation info
   ansible.builtin.debug:
@@ -47,7 +40,7 @@ Dieses Template kann für die Installation von GitHub-basierten Tools verwendet 
     path: "{{ target_user_home }}/local/bin"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: Create temporary download directory
@@ -73,7 +66,7 @@ Dieses Template kann für die Installation von GitHub-basierten Tools verwendet 
     src: "{{ temp_dir.path }}/BINARY_PATH"
     dest: "{{ target_user_home }}/local/bin/TOOLNAME"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
     remote_src: yes
 

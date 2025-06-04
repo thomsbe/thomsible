@@ -1,4 +1,7 @@
 ---
+# Common task to get target user information including primary group
+# This task should be included at the beginning of all target_user-aware roles
+
 - name: Get target user information
   ansible.builtin.getent:
     database: passwd
@@ -20,24 +23,11 @@
   ansible.builtin.set_fact:
     target_user_group_name: "{{ target_user_group_info.ansible_facts.getent_group.keys() | first }}"
 
-- name: Ensure .ssh directory exists for target user
-  ansible.builtin.file:
-    path: "{{ target_user_home }}/.ssh"
-    state: directory
-    owner: "{{ target_user }}"
-    group: "{{ target_user_group_name }}"
-    mode: '0700'
-
-- name: Add tbaer SSH public key to target user's authorized_keys
-  ansible.builtin.authorized_key:
-    user: "{{ target_user }}"
-    state: present
-    key: "{{ tbaer_ssh_pubkey }}"
-    comment: "tbaer key added by thomsible"
-
-- name: Disable password authentication for target user
-  ansible.builtin.user:
-    name: "{{ target_user }}"
-    password: '!'
-  when: target_user != "root"  # Vorsicht bei root - nur wenn explizit gewünscht
-
+- name: Debug target user information
+  ansible.builtin.debug:
+    msg: |
+      Target user: {{ target_user }}
+      Home directory: {{ target_user_home }}
+      Primary group ID: {{ target_user_group }}
+      Primary group name: {{ target_user_group_name }}
+  when: ansible_verbosity >= 1

@@ -17,7 +17,7 @@
     path: "{{ target_user_home }}/.config/fish/conf.d"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
   when: tools_with_aliases | length > 0
 
@@ -26,7 +26,7 @@
     src: fish_aliases.fish.j2
     dest: "{{ github_tools_fish_aliases_file }}"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
   when: tools_with_aliases | length > 0
 
@@ -35,7 +35,7 @@
     src: bash_aliases.j2
     dest: "{{ github_tools_bash_aliases_file }}"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
   when: tools_with_aliases | length > 0
 
@@ -46,7 +46,7 @@
     regexp: ".*bash_aliases.*"
     state: present
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     create: yes
   when: tools_with_aliases | length > 0
 
@@ -55,7 +55,7 @@
     path: "{{ target_user_home }}/.config"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
   when: "'starship' in github_tools_to_install"
 
@@ -64,7 +64,7 @@
     src: starship.toml
     dest: "{{ target_user_home }}/.config/starship.toml"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
     backup: yes
   when: "'starship' in github_tools_to_install"
@@ -76,7 +76,7 @@
     regexp: ".*starship init bash.*"
     state: present
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     create: yes
   when: "'starship' in github_tools_to_install"
 
@@ -87,6 +87,6 @@
     regexp: ".*starship init fish.*"
     state: present
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     create: yes
   when: "'starship' in github_tools_to_install"
