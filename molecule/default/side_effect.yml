@@ -1,0 +1,54 @@
+---
+# Test additional scenarios and edge cases
+- name: Test individual tool installation
+  hosts: all
+  become: true
+  gather_facts: true
+  
+  vars:
+    target_user: testuser
+    
+  tasks:
+    - name: Test individual tool installation (lazygit only)
+      ansible.builtin.include_role:
+        name: ../../roles/modern_tools
+        tasks_from: tools/lazygit.yml
+      vars:
+        tool_name: lazygit
+        tool_config:
+          repo: "jesseduffield/lazygit"
+          asset_pattern: ".*Linux_x86_64.tar.gz$"
+          archive_extension: "tar.gz"
+          description: "Terminal UI für Git"
+
+    - name: Test category-based installation
+      ansible.builtin.include_role:
+        name: ../../roles/modern_tools
+      vars:
+        tools_config:
+          bat:
+            enabled: true
+            description: "Cat with syntax highlighting"
+            category: "file_tools"
+            repo: "sharkdp/bat"
+            asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+            archive_extension: "tar.gz"
+            alias: "cat"
+      tags: [category_file_tools]
+
+    - name: Verify additional installations
+      ansible.builtin.command: 
+        cmd: "sudo -u testuser /home/testuser/.local/bin/{{ item }} --version"
+      register: additional_check
+      loop:
+        - lazygit
+        - bat
+      changed_when: false
+      
+    - name: Display side effect test results
+      ansible.builtin.debug:
+        msg: |
+          🧪 Side effect tests completed:
+          - Individual tool installation: ✅
+          - Category-based installation: ✅
+          - Tools remain functional: ✅

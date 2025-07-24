@@ -1,0 +1,113 @@
+---
+# Verify that tools are installed and working
+- name: Verify thomsible installation
+  hosts: all
+  become: true
+  gather_facts: true
+  
+  tasks:
+    - name: Check that testuser exists
+      ansible.builtin.user:
+        name: testuser
+      register: user_check
+      
+    - name: Verify user home directory
+      ansible.builtin.stat:
+        path: /home/testuser
+      register: home_check
+      
+    - name: Assert user exists and has home
+      ansible.builtin.assert:
+        that:
+          - user_check is succeeded
+          - home_check.stat.exists
+          - home_check.stat.isdir
+        fail_msg: "Test user setup failed"
+        success_msg: "Test user properly configured"
+
+    - name: Check .local/bin directory exists
+      ansible.builtin.stat:
+        path: /home/testuser/.local/bin
+      register: local_bin_check
+      
+    - name: Assert .local/bin directory
+      ansible.builtin.assert:
+        that:
+          - local_bin_check.stat.exists
+          - local_bin_check.stat.isdir
+        fail_msg: ".local/bin directory missing"
+        success_msg: ".local/bin directory exists"
+
+    - name: Check installed tools
+      ansible.builtin.stat:
+        path: "/home/testuser/.local/bin/{{ item }}"
+      register: tool_check
+      loop:
+        - lazygit
+        - starship
+        - bat
+      
+    - name: Assert tools are installed
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.executable
+        fail_msg: "Tool {{ item.item }} not found or not executable"
+        success_msg: "Tool {{ item.item }} properly installed"
+      loop: "{{ tool_check.results }}"
+      
+    - name: Test tool functionality (as testuser)
+      ansible.builtin.command: 
+        cmd: "sudo -u testuser /home/testuser/.local/bin/{{ item }} --version"
+      register: version_check
+      loop:
+        - lazygit
+        - starship
+        - bat
+      changed_when: false
+      
+    - name: Assert tools are functional
+      ansible.builtin.assert:
+        that:
+          - item.rc == 0
+          - item.stdout is defined
+          - item.stdout | length > 0
+        fail_msg: "Tool {{ item.item }} version check failed"
+        success_msg: "Tool {{ item.item }} is functional"
+      loop: "{{ version_check.results }}"
+
+    - name: Check Fish shell configuration
+      ansible.builtin.stat:
+        path: /home/testuser/.config/fish/config.fish
+      register: fish_config_check
+      
+    - name: Assert Fish configuration exists
+      ansible.builtin.assert:
+        that:
+          - fish_config_check.stat.exists
+        fail_msg: "Fish configuration missing"
+        success_msg: "Fish configuration exists"
+
+    - name: Check PATH configuration in Fish
+      ansible.builtin.slurp:
+        src: /home/testuser/.config/fish/config.fish
+      register: fish_config_content
+      
+    - name: Assert PATH is configured in Fish
+      ansible.builtin.assert:
+        that:
+          - "'.local/bin' in fish_config_content.content | b64decode"
+        fail_msg: "PATH not properly configured in Fish"
+        success_msg: "PATH properly configured in Fish"
+
+    - name: Display test summary
+      ansible.builtin.debug:
+        msg: |
+          ✅ Thomsible verification completed successfully!
+          
+          Verified components:
+          - Test user (testuser) created
+          - .local/bin directory exists  
+          - Essential tools installed: lazygit, starship, bat
+          - Tools are functional (version checks pass)
+          - Fish shell configured with PATH

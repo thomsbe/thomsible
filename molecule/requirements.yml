@@ -1,0 +1,5 @@
+---
+# Molecule dependencies
+collections:
+  - community.general
+  - ansible.posix

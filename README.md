@@ -85,25 +85,25 @@ gh auth login
 
 Für neue Rechner gibt es auch direkte Ansible-Playbooks:
 
-#### Vollständiges Bootstrap (NEU!)
+#### Vollständiges Bootstrap
 ```bash
 # Komplette Installation mit Service-User (target_user ERFORDERLICH!)
-sudo ansible-playbook bootstrap_new.yml -e "target_user=thomas" --ask-become-pass
+sudo ansible-playbook bootstrap.yml -e "target_user=thomas" --ask-become-pass
 
 # Ohne Service-User
-sudo ansible-playbook bootstrap_new.yml -e "target_user=thomas" -e "create_service_user=false" --ask-become-pass
+sudo ansible-playbook bootstrap.yml -e "target_user=thomas" -e "create_service_user=false" --ask-become-pass
 
 # Mit Tags nur bestimmte Phasen
-sudo ansible-playbook bootstrap_new.yml -e "target_user=thomas" --tags "modern_tools" --ask-become-pass
+sudo ansible-playbook bootstrap.yml -e "target_user=thomas" --tags "modern_tools" --ask-become-pass
 ```
 
-#### Nur Tools installieren (NEU!)
+#### Nur Tools installieren
 ```bash
 # Schnelle Installation nur der CLI-Tools
-sudo ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas" --ask-become-pass
+sudo ansible-playbook bootstrap_tools.yml -e "target_user=thomas" --ask-become-pass
 
 # Mit einzelnen Tools
-sudo ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas" --tags "lazygit,starship,btop" --ask-become-pass
+sudo ansible-playbook bootstrap_tools.yml -e "target_user=thomas" --tags "lazygit,starship,btop" --ask-become-pass
 ```
 
 **Was wird installiert:**
@@ -147,12 +147,8 @@ docker exec -it debian11 bash
 - **`target_user_config`**: Konfiguriert echten Benutzer (Fish shell, PATH, explizite Definition)
 - **`modern_tools`**: Installiert moderne CLI-Tools (einzelne Dateien pro Tool mit Tags)
 
-### Legacy-Rollen (deprecated)
-- **`thomsible_user`**: ⚠️ Ersetzt durch `service_user`
-- **`ssh_keys`**: ⚠️ Integriert in `service_user`
-- **`user_config`**: ⚠️ Ersetzt durch `target_user_config`
-- **`git`**: ⚠️ Integriert in `modern_tools`
-- **`github_tools`**: ⚠️ Ersetzt durch `modern_tools`
+### Zusätzliche Rollen
+- **`common`**: Gemeinsame Tasks (Fedora-Requirements, etc.)
 
 ## Installierte Tools
 
@@ -161,7 +157,7 @@ Die `github_tools` Rolle installiert automatisch die neuesten Versionen folgende
 
 #### Git & Development
 - **`lazygit`**: Interaktives Git-Interface im Terminal
-- **`starship`**: Moderner, anpassbarer Shell-Prompt
+- **`starship`**: Moderner Shell-Prompt (Konfiguration aus yast dotfile sync)
 
 #### System Monitoring & Process Management
 - **`procs`**: Moderner `ps` Ersatz mit besserer Darstellung

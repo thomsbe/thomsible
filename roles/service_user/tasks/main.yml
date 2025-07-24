@@ -36,9 +36,9 @@
     name: "{{ ansible_user_name }}"
     shell: "{{ service_user_shell }}"
     groups: "{{ sudo_group }}"
-    append: yes
+    append: true
     state: present
-    create_home: yes
+    create_home: true
     comment: "Thomsible Automation Service User"
 
 - name: "Ensure .ssh directory exists for service user"
@@ -50,7 +50,7 @@
     mode: '0700'
 
 - name: "Set authorized key for service user"
-  ansible.builtin.authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ ansible_user_name }}"
     state: present
     key: "{{ ansible_user_ssh_pubkey }}"
@@ -80,7 +80,7 @@
     owner: root
     group: root
     mode: '0644'
-  ignore_errors: yes  # Falls AccountsService nicht verfügbar
+  failed_when: false  # AccountsService ist optional
 
 - name: "Create service user marker file"
   ansible.builtin.copy:
@@ -90,7 +90,6 @@
       # Created: {{ ansible_date_time.iso8601 }}
       # Purpose: Ansible automation
       # SSH-Key: {{ ansible_user_ssh_pubkey.split()[2] | default('unknown') }}
-      # 
       # This is a service account for automation.
       # It should not be used for interactive login.
     owner: "{{ ansible_user_name }}"

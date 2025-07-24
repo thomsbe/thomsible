@@ -1,0 +1,39 @@
+---
+# Prepare the test environment
+- name: Prepare test environment
+  hosts: all
+  become: true
+  gather_facts: true
+  
+  tasks:
+    - name: Create test user
+      ansible.builtin.user:
+        name: testuser
+        shell: /bin/bash
+        create_home: true
+        groups: 
+          - sudo
+        append: true
+      when: ansible_os_family == "Debian"
+
+    - name: Create test user (RedHat)
+      ansible.builtin.user:
+        name: testuser
+        shell: /bin/bash
+        create_home: true
+        groups: 
+          - wheel
+        append: true
+      when: ansible_os_family == "RedHat"
+
+    - name: Install Python for Ansible
+      ansible.builtin.package:
+        name: 
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Update package cache (Debian)
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_os_family == "Debian"

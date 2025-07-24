@@ -1,8 +1,8 @@
-# Rollen-Dokumentation (NEU!)
+# Rollen-Dokumentation
 
-## Neue 3-Rollen-Struktur
+## 3-Rollen-Struktur
 
-### Moderne Rollen
+### Hauptrollen
 
 #### `service_user` (NEU!)
 **Zweck**: Erstellt thomsible Service-User für Ansible-Automatisierung

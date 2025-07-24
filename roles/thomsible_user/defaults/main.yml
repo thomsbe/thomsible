@@ -1,9 +1,0 @@
----
-# Default variables for thomsible_user role
-
-# Name of the Ansible automation user (can be customized)
-ansible_user_name: "thomsible"
-
-# SSH public key for the Ansible user
-# Can be overridden in group_vars or host_vars
-ansible_user_ssh_pubkey: "{{ thomsible_ssh_pubkey | default('') }}"

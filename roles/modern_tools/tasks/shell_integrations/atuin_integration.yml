@@ -10,7 +10,8 @@
     state: present
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
-    create: yes
+    create: true
+    mode: '0644'
 
 - name: "Initialize atuin in fish"
   ansible.builtin.lineinfile:
@@ -20,7 +21,8 @@
     state: present
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
-    create: yes
+    create: true
+    mode: '0644'
 
 - name: "Display atuin setup info"
   ansible.builtin.debug:

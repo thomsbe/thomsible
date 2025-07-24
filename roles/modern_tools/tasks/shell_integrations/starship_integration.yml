@@ -1,6 +1,7 @@
 ---
 # Starship Shell Integration
 # Sets up starship prompt for bash and fish shells
+# Configuration comes from yast dotfile sync - only fallback if missing
 
 - name: "Create starship config directory"
   ansible.builtin.file:
@@ -10,14 +11,28 @@
     group: "{{ target_user }}"
     mode: '0755'
 
-- name: "Setup starship configuration"
+- name: "Check if starship config exists (from yast dotfile sync)"
+  ansible.builtin.stat:
+    path: "{{ target_user_home }}/.config/starship.toml"
+  register: starship_config_exists
+
+- name: "Setup basic starship configuration (fallback only)"
   ansible.builtin.copy:
-    src: starship.toml
+    src: "starship_basic.toml"
     dest: "{{ target_user_home }}/.config/starship.toml"
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'
-    backup: yes
+  when: not starship_config_exists.stat.exists
+
+- name: "Display starship config source"
+  ansible.builtin.debug:
+    msg: |
+      {% if starship_config_exists.stat.exists %}
+      ✅ Starship config found - using existing (from yast dotfile sync)
+      {% else %}
+      📝 No starship config found - created basic fallback config
+      {% endif %}
 
 - name: "Initialize starship in bash"
   ansible.builtin.lineinfile:
@@ -27,7 +42,8 @@
     state: present
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
-    create: yes
+    create: true
+    mode: '0644'
 
 - name: "Initialize starship in fish"
   ansible.builtin.lineinfile:
@@ -37,4 +53,5 @@
     state: present
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
-    create: yes
+    create: true
+    mode: '0644'

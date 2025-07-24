@@ -1,11 +1,28 @@
 [project]
 name = "thomsible"
-version = "0.1.0"
+version = "0.2.0"
 description = "Ansible Rollen für Desktop- und Server-Systeme, getestet mit Molecule und Docker."
 requires-python = ">=3.10"
 dependencies = [
     "ansible",
+    "molecule[docker]",
+    "molecule-plugins[docker]",
 ]
 
 [tool.uv]
 # uv-spezifische Konfigurationen können hier ergänzt werden
+dev-dependencies = [
+    "ansible-lint",
+    "yamllint",
+]
+
+[project.optional-dependencies]
+test = [
+    "molecule[docker]",
+    "molecule-plugins[docker]",
+    "ansible-lint",
+    "yamllint",
+]
+
+[tool.molecule]
+# Molecule-spezifische Konfigurationen

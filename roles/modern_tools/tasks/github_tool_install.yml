@@ -32,14 +32,14 @@
     url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
     headers:
       Authorization: "token {{ github_token }}"
-    return_content: yes
+    return_content: true
   register: release_info
   when: github_token is defined and github_token != ""
 
 - name: "Get latest release info for {{ tool_name }} (without token)"
   ansible.builtin.uri:
     url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
-    return_content: yes
+    return_content: true
   register: release_info
   when: github_token is not defined or github_token == ""
 
@@ -74,14 +74,14 @@
   ansible.builtin.unarchive:
     src: "{{ temp_dir.path }}/{{ asset_name }}"
     dest: "{{ temp_dir.path }}"
-    remote_src: yes
+    remote_src: true
   when: tool_config.archive_extension != "binary"
 
 - name: "Find {{ tool_name }} binary in extracted files"
   ansible.builtin.find:
     paths: "{{ temp_dir.path }}"
     patterns: "{{ tool_config.binary_name | default(tool_name) }}"
-    recurse: yes
+    recurse: true
     file_type: file
   register: binary_search
   when: tool_config.archive_extension != "binary"
@@ -105,7 +105,7 @@
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0755'
-    remote_src: yes
+    remote_src: true
 
 - name: "Cleanup temp directory for {{ tool_name }}"
   ansible.builtin.file:

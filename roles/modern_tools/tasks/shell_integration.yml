@@ -7,32 +7,18 @@
     dest: "{{ target_user_home }}/.bash_aliases"
     content: |
       # Modern CLI tool aliases (managed by thomsible)
-      {% if 'bat' in tools_to_install and create_shell_aliases %}
-      alias cat='bat'
+      # Generated from centralized tools_config
+      {% for tool_item in tools_config | dict2items %}
+      {% set tool_name = tool_item.key %}
+      {% set config = tool_item.value %}
+      {% if config.enabled and config.alias is defined and create_shell_aliases %}
+      alias {{ config.alias }}='{{ tool_name }}'
+      {% if config.alias == 'ls' %}
+      alias ll='{{ tool_name }} -la'
+      alias la='{{ tool_name }} -a'
       {% endif %}
-      {% if 'eza' in tools_to_install and create_shell_aliases %}
-      alias ls='eza'
-      alias ll='eza -la'
-      alias la='eza -a'
       {% endif %}
-      {% if 'dust' in tools_to_install and create_shell_aliases %}
-      alias du='dust'
-      {% endif %}
-      {% if 'procs' in tools_to_install and create_shell_aliases %}
-      alias ps='procs'
-      {% endif %}
-      {% if 'duf' in tools_to_install and create_shell_aliases %}
-      alias df='duf'
-      {% endif %}
-      {% if 'dog' in tools_to_install and create_shell_aliases %}
-      alias dig='dog'
-      {% endif %}
-      {% if 'topgrade' in tools_to_install and create_shell_aliases %}
-      alias tg='topgrade'
-      {% endif %}
-      {% if 'tealdeer' in tools_to_install and create_shell_aliases %}
-      alias tldr='tealdeer'
-      {% endif %}
+      {% endfor %}
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'
@@ -46,7 +32,7 @@
     state: present
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
-    create: yes
+    create: true
   when: create_shell_aliases | default(true)
 
 - name: "Create fish aliases file"
@@ -54,32 +40,18 @@
     dest: "{{ target_user_home }}/.config/fish/conf.d/modern_tools_aliases.fish"
     content: |
       # Modern CLI tool aliases (managed by thomsible)
-      {% if 'bat' in tools_to_install and create_shell_aliases %}
-      alias cat='bat'
+      # Generated from centralized tools_config
+      {% for tool_item in tools_config | dict2items %}
+      {% set tool_name = tool_item.key %}
+      {% set config = tool_item.value %}
+      {% if config.enabled and config.alias is defined and create_shell_aliases %}
+      alias {{ config.alias }}='{{ tool_name }}'
+      {% if config.alias == 'ls' %}
+      alias ll='{{ tool_name }} -la'
+      alias la='{{ tool_name }} -a'
       {% endif %}
-      {% if 'eza' in tools_to_install and create_shell_aliases %}
-      alias ls='eza'
-      alias ll='eza -la'
-      alias la='eza -a'
       {% endif %}
-      {% if 'dust' in tools_to_install and create_shell_aliases %}
-      alias du='dust'
-      {% endif %}
-      {% if 'procs' in tools_to_install and create_shell_aliases %}
-      alias ps='procs'
-      {% endif %}
-      {% if 'duf' in tools_to_install and create_shell_aliases %}
-      alias df='duf'
-      {% endif %}
-      {% if 'dog' in tools_to_install and create_shell_aliases %}
-      alias dig='dog'
-      {% endif %}
-      {% if 'topgrade' in tools_to_install and create_shell_aliases %}
-      alias tg='topgrade'
-      {% endif %}
-      {% if 'tealdeer' in tools_to_install and create_shell_aliases %}
-      alias tldr='tealdeer'
-      {% endif %}
+      {% endfor %}
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'

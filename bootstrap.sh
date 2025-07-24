@@ -20,7 +20,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Standard-Werte
-PLAYBOOK="bootstrap_new.yml"
+PLAYBOOK="bootstrap.yml"
 TARGET_USER=""
 SKIP_SERVICE_USER=""
 EXTRA_VARS=""
@@ -300,7 +300,7 @@ main() {
     while [[ $# -gt 0 ]]; do
         case $1 in
             --tools-only)
-                PLAYBOOK="bootstrap_tools_new.yml"
+                PLAYBOOK="bootstrap_tools.yml"
                 shift
                 ;;
             --user)

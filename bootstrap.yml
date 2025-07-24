@@ -16,11 +16,11 @@
   vars:
     # WICHTIG: target_user muss explizit gesetzt werden!
     # Beispiel: -e "target_user=thomas"
-    
+
     # Service User Konfiguration
     ansible_user_name: "thomsible"
     ansible_user_ssh_pubkey: "{{ lookup('env', 'THOMSIBLE_SSH_KEY') | default('ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaQP9YHqJ3Lq8yrqPHOT6HyVsYhp/QhgGkyo8pQ6qlm thomsible') }}"
-    
+
     # Modern Tools Konfiguration
     tools_to_install:
       - lazygit
@@ -41,27 +41,29 @@
       - dog
       - termshark
       - topgrade
-    
+
     # Features aktivieren
     create_shell_aliases: true
     install_system_tools: true
     configure_git: true
     setup_shell_integration: true
     github_tools_check_conflicts: true
-    
+
     # GitHub Token (optional für höhere API-Limits)
     github_token: "{{ lookup('env', 'GITHUB_TOKEN') | default('') }}"
+
+    # Starship Konfiguration kommt aus yast dotfile sync
 
   pre_tasks:
     - name: "Validate target_user is defined"
       ansible.builtin.fail:
         msg: |
           ❌ target_user muss explizit definiert werden!
-          
+
           Beispiele:
           ansible-playbook bootstrap_new.yml -e "target_user=thomas"
           ansible-playbook bootstrap_new.yml -e "target_user=root"
-          
+
           KEINE Auto-Erkennung mehr aus Sicherheitsgründen!
       when: target_user is not defined or target_user == ""
 
@@ -69,19 +71,19 @@
       ansible.builtin.debug:
         msg: |
           🚀 THOMSIBLE BOOTSTRAP - NEW STRUCTURE 🚀
-          
+
           Target machine: {{ inventory_hostname }}
           Current user: {{ ansible_user_id }}
           Target user: {{ target_user }}
           Service user: {{ ansible_user_name }}
           OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
-          
+
           This will:
           1. Create service user ({{ ansible_user_name }}) - hidden from login
           2. Configure target user ({{ target_user }}) - fish shell + PATH
           3. Install {{ tools_to_install | length }} modern CLI tools
           4. Setup shell aliases and integrations
-          
+
           Press Ctrl+C to abort if this is not correct.
 
     - name: "Pause for confirmation"
@@ -95,7 +97,7 @@
       tags: [service_user, phase1]
       when: create_service_user | default(true)
 
-    # Phase 2: Target User Configuration  
+    # Phase 2: Target User Configuration
     - role: target_user_config
       tags: [target_user_config, phase2]
 
@@ -108,7 +110,7 @@
       ansible.builtin.debug:
         msg: |
           ✅ BOOTSTRAP COMPLETED SUCCESSFULLY! ✅
-          
+
           🎯 What was configured:
           {% if create_service_user | default(true) %}
           - Service user: {{ ansible_user_name }} (hidden from login)
@@ -120,34 +122,34 @@
           {% endif %}
           - Git configured for {{ target_user }}
           - System tools: ncdu, lshw, mtr, glances, dstat, etc.
-          
+
           🚀 Next steps:
           1. Logout and login again (or: exec $SHELL)
           2. Test tools: lazygit --version, btop --version
           3. Try aliases: cat README.md, ls -la
           4. Setup atuin: atuin register, atuin login
-          
+
           📚 Documentation: README.md and docs/ folder
 
     - name: "Show useful commands"
       ansible.builtin.debug:
         msg: |
           💡 Useful commands to try:
-          
+
           # Modern replacements
           lazygit          # Terminal Git UI
-          btop             # System monitor  
+          btop             # System monitor
           bat README.md    # Syntax highlighting
           eza -la          # Modern ls with icons
           fd "*.yml"       # Fast file search
           rg "ansible"     # Fast text search
           dust             # Disk usage analyzer
           duf              # Disk usage overview
-          
+
           # Navigation & History
           z <directory>    # Smart directory jumping
           atuin search     # Searchable shell history
-          
+
           # System tools
           tg               # Update all packages
           tldr <command>   # Quick help pages

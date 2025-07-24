@@ -12,7 +12,7 @@
       - dstat         # System statistics
       - python3-pip   # For Python tools
     state: present
-    update_cache: yes
+    update_cache: true
   when: ansible_os_family == "Debian"
 
 - name: "Install system tools on RedHat/Fedora"

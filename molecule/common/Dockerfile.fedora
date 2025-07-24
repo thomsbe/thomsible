@@ -1,0 +1,28 @@
+FROM fedora:42
+
+# Install systemd and required packages
+RUN dnf install -y \
+    systemd \
+    sudo \
+    python3 \
+    python3-pip \
+    python3-libdnf5 \
+    openssh-server \
+    curl \
+    wget \
+    git \
+    && dnf clean all
+
+# Remove unnecessary systemd services
+RUN cd /lib/systemd/system/sysinit.target.wants/ && \
+    ls | grep -v systemd-tmpfiles-setup | xargs rm -f && \
+    rm -f /lib/systemd/system/multi-user.target.wants/* \
+    /etc/systemd/system/*.wants/* \
+    /lib/systemd/system/local-fs.target.wants/* \
+    /lib/systemd/system/sockets.target.wants/*udev* \
+    /lib/systemd/system/sockets.target.wants/*initctl* \
+    /lib/systemd/system/basic.target.wants/* \
+    /lib/systemd/system/anaconda.target.wants/*
+
+VOLUME ["/sys/fs/cgroup"]
+CMD ["/usr/lib/systemd/systemd"]

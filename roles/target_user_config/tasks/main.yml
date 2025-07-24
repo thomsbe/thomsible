@@ -92,7 +92,7 @@
     path: "{{ target_user_home }}/.bashrc"
     line: 'export PATH="$HOME/.local/bin:$PATH"'
     regexp: '.*\.local/bin.*'
-    create: yes
+    create: true
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'
@@ -102,7 +102,7 @@
     path: "{{ target_user_home }}/.bash_profile"
     line: 'export PATH="$HOME/.local/bin:$PATH"'
     regexp: '.*\.local/bin.*'
-    create: yes
+    create: true
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
     mode: '0644'

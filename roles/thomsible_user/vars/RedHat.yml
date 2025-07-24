@@ -1,4 +1,0 @@
----
-# OS-spezifische Variablen für RedHat/Fedora/CentOS
-sudo_group: wheel
-install_sudo_package: false

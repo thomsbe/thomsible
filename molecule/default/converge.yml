@@ -1,0 +1,35 @@
+---
+# Converge playbook for testing thomsible
+- name: Test thomsible bootstrap
+  hosts: all
+  become: true
+  gather_facts: true
+  
+  vars:
+    target_user: testuser
+    # Minimal tool config for testing
+    tools_config:
+      lazygit:
+        enabled: true
+        description: "Terminal UI für Git"
+        category: "development"
+        repo: "jesseduffield/lazygit"
+        asset_pattern: ".*Linux_x86_64.tar.gz$"
+        archive_extension: "tar.gz"
+      
+  pre_tasks:
+    - name: Debug tools_config
+      ansible.builtin.debug:
+        var: tools_config
+  
+  roles:
+    - role: ../../roles/target_user_config
+      tags: [target_user_config]
+    
+    - role: ../../roles/modern_tools
+      tags: [modern_tools]
+      vars:
+        install_system_tools: false
+        configure_git: false
+        setup_shell_integration: false
+        create_shell_aliases: false

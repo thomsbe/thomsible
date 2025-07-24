@@ -14,7 +14,7 @@
   vars:
     # WICHTIG: target_user muss explizit gesetzt werden!
     # Beispiel: -e "target_user=thomas"
-    
+
     # Modern Tools Konfiguration
     tools_to_install:
       - lazygit
@@ -35,23 +35,25 @@
       - dog
       - termshark
       - topgrade
-    
+
     # Features aktivieren
     create_shell_aliases: true
     install_system_tools: true
     configure_git: true
     setup_shell_integration: true
     github_tools_check_conflicts: true
-    
+
     # GitHub Token (optional für höhere API-Limits)
     github_token: "{{ lookup('env', 'GITHUB_TOKEN') | default('') }}"
+
+    # Starship Konfiguration kommt aus yast dotfile sync
 
   pre_tasks:
     - name: "Validate target_user is defined"
       ansible.builtin.fail:
         msg: |
           ❌ target_user muss explizit definiert werden!
-          
+
           Beispiel:
           ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas"
       when: target_user is not defined or target_user == ""
@@ -60,21 +62,21 @@
       ansible.builtin.debug:
         msg: |
           🛠️ THOMSIBLE TOOLS-ONLY BOOTSTRAP 🛠️
-          
+
           Target user: {{ target_user }}
           OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
-          
+
           This will install:
           1. Fish shell and PATH configuration
           2. {{ tools_to_install | length }} modern CLI tools
           3. System tools (ncdu, lshw, mtr, etc.)
           4. Git configuration
           5. Shell aliases and integrations
-          
+
           NO service user will be created!
 
   roles:
-    # Target User Configuration  
+    # Target User Configuration
     - role: target_user_config
       tags: [target_user_config]
 
@@ -87,7 +89,7 @@
       ansible.builtin.debug:
         msg: |
           ✅ TOOLS-ONLY BOOTSTRAP COMPLETED! ✅
-          
+
           🎯 What was installed for {{ target_user }}:
           - Fish shell with PATH configuration
           - {{ tools_to_install | length }} modern CLI tools
@@ -96,10 +98,10 @@
           {% if create_shell_aliases %}
           - Shell aliases: cat→bat, ls→eza, du→dust, etc.
           {% endif %}
-          
+
           🚀 Next steps:
           1. Logout and login again (or: exec $SHELL)
           2. Test tools: lazygit --version, btop --version
           3. Setup atuin: atuin register, atuin login
-          
+
           💡 No service user was created - this is tools-only!
