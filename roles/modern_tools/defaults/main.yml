@@ -1,0 +1,223 @@
+---
+#########################
+# MODERN TOOLS CONFIGURATION
+# Zentral verwaltete Tool-Konfiguration mit enable/disable Funktionalität
+#########################
+
+# GitHub Tools Configuration
+# Jedes Tool hat seine eigene Konfiguration mit common properties
+tools_config:
+  lazygit:
+    enabled: true
+    description: "Terminal UI für Git"
+    category: "development"
+    repo: "jesseduffield/lazygit"
+    asset_pattern: ".*Linux_x86_64.tar.gz$"
+    archive_extension: "tar.gz"
+
+  starship:
+    enabled: true
+    description: "Cross-shell prompt"
+    category: "shell"
+    repo: "starship/starship"  
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  bat:
+    enabled: true
+    description: "Cat with syntax highlighting"
+    category: "file_tools"
+    repo: "sharkdp/bat"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+    alias: "cat"
+
+  eza:
+    enabled: true
+    description: "Modern ls replacement"
+    category: "file_tools"
+    repo: "eza-community/eza"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+    alias: "ls"
+
+  fd:
+    enabled: true
+    description: "User-friendly find alternative"
+    category: "file_tools"
+    repo: "sharkdp/fd"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  ripgrep:
+    enabled: true
+    description: "Fast text search tool"
+    category: "search"
+    repo: "BurntSushi/ripgrep"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  fzf:
+    enabled: true
+    description: "Command-line fuzzy finder"
+    category: "search"
+    repo: "junegunn/fzf"
+    asset_pattern: ".*linux_amd64.tar.gz$"
+    archive_extension: "tar.gz"
+
+  dust:
+    enabled: true
+    description: "du + rust = dust. Like du but more intuitive"
+    category: "file_tools"
+    repo: "bootandy/dust"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  duf:
+    enabled: true
+    description: "Disk Usage/Free Utility"
+    category: "system"
+    repo: "muesli/duf"
+    asset_pattern: ".*linux_x86_64.tar.gz$"
+    archive_extension: "tar.gz"
+
+  btop:
+    enabled: true
+    description: "Resource monitor that shows usage and stats"
+    category: "monitoring"
+    repo: "aristocratos/btop"
+    asset_pattern: ".*x86_64-linux-musl.tbz$"
+    archive_extension: "tbz"
+
+  procs:
+    enabled: true
+    description: "Modern replacement for ps"
+    category: "system"
+    repo: "dalance/procs"
+    asset_pattern: ".*x86_64-linux.zip$"
+    archive_extension: "zip"
+
+  dog:
+    enabled: true
+    description: "Command-line DNS client"
+    category: "network"
+    repo: "ogham/dog"
+    asset_pattern: ".*x86_64-unknown-linux-gnu.zip$"
+    archive_extension: "zip"
+
+  gping:
+    enabled: true
+    description: "Ping, but with a graph"
+    category: "network"
+    repo: "orf/gping"
+    asset_pattern: ".*linux-x86_64.tar.gz$"
+    archive_extension: "tar.gz"
+
+  tealdeer:
+    enabled: true
+    description: "Fast implementation of tldr"
+    category: "documentation"
+    repo: "dbrgn/tealdeer"
+    asset_pattern: ".*x86_64-unknown-linux-musl$"
+    archive_extension: "binary"
+
+  zoxide:
+    enabled: true
+    description: "Smarter cd command"
+    category: "navigation"
+    repo: "ajeetdsouza/zoxide"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  atuin:
+    enabled: true
+    description: "Shell history replacement"
+    category: "shell"
+    repo: "atuinsh/atuin"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  topgrade:
+    enabled: true
+    description: "Upgrade everything"
+    category: "maintenance"
+    repo: "topgrade-rs/topgrade"
+    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  termshark:
+    enabled: false
+    description: "Terminal UI for tshark"
+    category: "network"
+    repo: "gcla/termshark"
+    asset_pattern: ".*linux_x64.tar.gz$"
+    archive_extension: "tar.gz"
+
+#########################
+# COMPUTED LISTS
+# Automatically generated from tools_config
+#########################
+
+# Diese werden zur Laufzeit generiert, nicht in defaults
+# Siehe tasks/main.yml für die dynamische Generierung
+
+#########################
+# INSTALLATION CONFIGURATION
+#########################
+
+# Installation path for GitHub tools (relative to target user home)
+github_tools_install_path: ".local/bin"
+
+# GitHub API token for higher rate limits (optional)
+github_token: "{{ lookup('env', 'GITHUB_TOKEN', default='') }}"
+
+# Conflict checking
+github_tools_check_conflicts: true
+
+#########################
+# FEATURE TOGGLES
+#########################
+
+# Additional features (can be disabled globally)
+install_system_tools: true
+configure_git: true
+setup_shell_integration: true
+create_shell_aliases: true
+
+#########################
+# SYSTEM TOOLS CONFIGURATION
+#########################
+
+system_tools:
+  ncdu:
+    enabled: true
+    description: "Interactive disk usage analyzer"
+    category: "system"
+  lshw:
+    enabled: true  
+    description: "Hardware information"
+    category: "system"
+  mtr:
+    enabled: true
+    description: "Network diagnostic tool"
+    category: "network"
+  glances:
+    enabled: true
+    description: "System monitoring dashboard"
+    category: "monitoring"
+  dstat:
+    enabled: true
+    description: "System statistics"
+    category: "monitoring"
+  magic-wormhole:
+    enabled: true
+    description: "Secure file transfer"
+    category: "network"
+    install_method: "pip"
+  unp:
+    enabled: true
+    description: "Universal archive extractor"
+    category: "file_tools"
+    install_method: "pip"
+
+# System tools list wird zur Laufzeit generiert

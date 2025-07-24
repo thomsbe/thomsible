@@ -45,10 +45,12 @@
 
 - name: "Find matching asset for {{ tool_name }}"
   ansible.builtin.set_fact:
-    download_url: "{{ item.browser_download_url }}"
-    asset_name: "{{ item.name }}"
+    download_url: "{{ asset_item.browser_download_url }}"
+    asset_name: "{{ asset_item.name }}"
   loop: "{{ release_info.json.assets }}"
-  when: item.name is regex(tool_config.asset_pattern)
+  loop_control:
+    loop_var: asset_item
+  when: asset_item.name is regex(tool_config.asset_pattern)
 
 - name: "Fail if no matching asset found for {{ tool_name }}"
   ansible.builtin.fail:

@@ -21,26 +21,12 @@
     ansible_user_name: "thomsible"
     ansible_user_ssh_pubkey: "{{ lookup('env', 'THOMSIBLE_SSH_KEY') | default('ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaQP9YHqJ3Lq8yrqPHOT6HyVsYhp/QhgGkyo8pQ6qlm thomsible') }}"
 
-    # Modern Tools Konfiguration
-    tools_to_install:
-      - lazygit
-      - starship
-      - btop
-      - fzf
-      - bat
-      - eza
-      - fd
-      - ripgrep
-      - dust
-      - procs
-      - zoxide
-      - atuin
-      - tealdeer
-      - duf
-      - gping
-      - dog
-      - termshark
-      - topgrade
+    # Modern Tools werden jetzt aus defaults/main.yml der modern_tools Rolle geladen
+    # Alle Tools sind standardmäßig aktiviert
+    # Einzelne Tools können deaktiviert werden mit:
+    # tools_config:
+    #   termshark:
+    #     enabled: false
 
     # Features aktivieren
     create_shell_aliases: true
@@ -50,7 +36,7 @@
     github_tools_check_conflicts: true
 
     # GitHub Token (optional für höhere API-Limits)
-    github_token: "{{ lookup('env', 'GITHUB_TOKEN') | default('') }}"
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN', default='') }}"
 
     # Starship Konfiguration kommt aus yast dotfile sync
 
@@ -81,7 +67,7 @@
           This will:
           1. Create service user ({{ ansible_user_name }}) - hidden from login
           2. Configure target user ({{ target_user }}) - fish shell + PATH
-          3. Install {{ tools_to_install | length }} modern CLI tools
+          3. Install modern CLI tools
           4. Setup shell aliases and integrations
 
           Press Ctrl+C to abort if this is not correct.
@@ -116,7 +102,7 @@
           - Service user: {{ ansible_user_name }} (hidden from login)
           {% endif %}
           - Target user: {{ target_user }} (fish shell, PATH configured)
-          - {{ tools_to_install | length }} modern CLI tools installed
+          - Modern CLI tools installed
           {% if create_shell_aliases %}
           - Shell aliases: cat→bat, ls→eza, du→dust, etc.
           {% endif %}

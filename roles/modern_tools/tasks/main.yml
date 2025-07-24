@@ -20,6 +20,12 @@
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
 
+- name: "Generate tools lists"
+  ansible.builtin.set_fact:
+    tools_to_install: "{{ tools_config | dict2items | selectattr('value.enabled', 'equalto', true) | map(attribute='key') | list }}"
+    tools_with_aliases: "{{ tools_config | dict2items | selectattr('value.alias', 'defined') | selectattr('value.enabled', 'equalto', true) | list }}"
+    system_tools_to_install: "{{ system_tools | dict2items | selectattr('value.enabled', 'equalto', true) | map(attribute='key') | list }}"
+
 - name: "Display modern tools configuration"
   ansible.builtin.debug:
     msg: |
@@ -47,17 +53,15 @@
 # Dynamic GitHub Tools Installation
 # Uses centralized tools_config from defaults/main.yml
 - name: "Install GitHub tools"
-  ansible.builtin.include_tasks: "tools/{{ item.key }}.yml"
+  ansible.builtin.include_tasks: "tools/{{ tool_item.key }}.yml"
   loop: "{{ tools_config | dict2items | selectattr('value.enabled', 'equalto', true) }}"
   loop_control:
-    loop_var: item
+    loop_var: tool_item
   vars:
-    tool_name: "{{ item.key }}"
-    tool_config: "{{ item.value }}"
+    tool_name: "{{ tool_item.key }}"
+    tool_config: "{{ tool_item.value }}"
   tags: 
-    - "{{ item.key }}"
     - github_tools
-    - "category_{{ item.value.category | default('general') }}"
 
 # System Tools
 - name: "Install system tools"

@@ -7,7 +7,7 @@
   
   vars:
     target_user: testuser
-    # Minimal tool config for testing
+    # Extended tool config for full testing
     tools_config:
       lazygit:
         enabled: true
@@ -16,6 +16,23 @@
         repo: "jesseduffield/lazygit"
         asset_pattern: ".*Linux_x86_64.tar.gz$"
         archive_extension: "tar.gz"
+      
+      starship:
+        enabled: true
+        description: "Cross-shell prompt"
+        category: "shell"
+        repo: "starship/starship"  
+        asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+        archive_extension: "tar.gz"
+      
+      bat:
+        enabled: true
+        description: "Cat with syntax highlighting"
+        category: "file_tools"
+        repo: "sharkdp/bat"
+        asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+        archive_extension: "tar.gz"
+        alias: "cat"
       
   pre_tasks:
     - name: Debug tools_config
@@ -29,7 +46,7 @@
     - role: ../../roles/modern_tools
       tags: [modern_tools]
       vars:
-        install_system_tools: false
-        configure_git: false
-        setup_shell_integration: false
-        create_shell_aliases: false
+        install_system_tools: true
+        configure_git: true
+        setup_shell_integration: true
+        create_shell_aliases: true
