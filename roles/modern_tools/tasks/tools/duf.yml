@@ -1,0 +1,13 @@
+---
+# Install duf - Modern df replacement
+# Repository: muesli/duf
+
+- name: "Install duf from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "duf"
+    tool_config:
+      repo: "muesli/duf"
+      asset_pattern: ".*linux_x86_64.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Modern df replacement"

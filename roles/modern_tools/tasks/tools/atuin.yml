@@ -1,0 +1,17 @@
+---
+# Install atuin - Magical shell history with sync
+# Repository: atuinsh/atuin
+
+- name: "Install atuin from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "atuin"
+    tool_config:
+      repo: "atuinsh/atuin"
+      asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Magical shell history with sync"
+
+# Atuin needs shell integration
+- name: "Setup atuin shell integration"
+  ansible.builtin.include_tasks: ../shell_integrations/atuin_integration.yml

@@ -80,7 +80,7 @@ github_tools_available:
     asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
     archive_extension: "tar.gz"
     description: "Smart cd replacement"
-    alias: "cd" # Optional: replaces cd command
+    # Note: zoxide needs shell integration, not just alias
 
   # Cross-shell prompt
   starship:
@@ -90,13 +90,13 @@ github_tools_available:
     description: "Cross-shell prompt"
     # No alias - prompt enhancement
 
-  # Intelligent history search
-  mcfly:
-    repo: "cantino/mcfly"
-    asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+  # Magical shell history with sync
+  atuin:
+    repo: "atuinsh/atuin"
+    asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
     archive_extension: "tar.gz"
-    description: "Intelligent history search"
-    # No alias - history enhancement
+    description: "Magical shell history with sync"
+    # No alias - history enhancement with sync capabilities
 
   # Practical command examples
   tealdeer:
@@ -154,14 +154,14 @@ github_tools_to_install:
 
 # Erweiterte Tools (können durch Überschreibung von github_tools_to_install aktiviert werden)
 # Alle verfügbaren GitHub Tools (17):
-# github_tools_to_install: [lazygit, btop, fzf, bat, fd, eza, rg, dust, procs, zoxide, starship, mcfly, tealdeer, duf, gping, dog, termshark, topgrade]
+# github_tools_to_install: [lazygit, btop, fzf, bat, fd, eza, rg, dust, procs, zoxide, starship, atuin, tealdeer, duf, gping, dog, termshark, topgrade]
 #
 # Kategorien:
 # - System: btop, procs, duf, dust, topgrade
 # - Files: bat, fd, eza, rg
 # - Navigation: fzf, zoxide
 # - Development: lazygit, starship
-# - Productivity: mcfly, tealdeer
+# - Productivity: atuin, tealdeer
 # - Network: gping, dog, termshark
 #
 # System Tools (installiert via Package Manager):

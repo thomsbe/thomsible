@@ -1,0 +1,12 @@
+---
+# Default variables for service_user role
+
+# Name of the Ansible automation service user
+ansible_user_name: "thomsible"
+
+# SSH public key for the service user
+# Can be overridden in group_vars or host_vars
+ansible_user_ssh_pubkey: "{{ thomsible_ssh_pubkey | default('') }}"
+
+# Default shell for service user (will be overridden by OS-specific vars)
+service_user_shell: "/usr/sbin/nologin"

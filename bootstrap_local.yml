@@ -16,7 +16,9 @@
 
   vars:
     # Standard-Konfiguration für lokale Installation
-    target_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"  # Echter Benutzer (nicht root bei sudo)
+    # WICHTIG: target_user sollte NICHT der echte Benutzer sein, wenn SSH-Keys konfiguriert werden!
+    # Für lokale Installation besser explizit setzen oder skip_ansible_user=true verwenden
+    target_user: "{{ target_user | default(ansible_env.SUDO_USER | default(ansible_user_id)) }}"
     skip_ansible_user: false  # Ansible-Benutzer trotzdem erstellen?
 
     # GitHub Tools die installiert werden sollen
@@ -32,7 +34,7 @@
       - dust
       - procs
       - zoxide
-      - mcfly
+      - atuin
       - tealdeer
       - duf
       - gping
@@ -95,7 +97,9 @@
       when: not (skip_ansible_user | bool)
 
     # Phase 2: Ziel-Benutzer konfigurieren
-    - role: ssh_keys
+    # WARNUNG: ssh_keys Rolle für lokale Installation übersprungen!
+    # Sie würde den lokalen Benutzer-Login sperren
+    # - role: ssh_keys  # NUR für Remote-Systeme verwenden!
     - role: user_config
     - role: git
     - role: github_tools

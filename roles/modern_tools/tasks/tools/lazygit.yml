@@ -1,0 +1,13 @@
+---
+# Install lazygit - Terminal UI for Git
+# Repository: jesseduffield/lazygit
+
+- name: "Install lazygit from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "lazygit"
+    tool_config:
+      repo: "jesseduffield/lazygit"
+      asset_pattern: ".*Linux_x86_64.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Terminal UI for Git"

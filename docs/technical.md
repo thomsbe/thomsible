@@ -1,23 +1,26 @@
-# Technische Details und Patterns
+# Technische Details und Patterns (NEU!)
 
 ## Technologiestack
 - **Ansible**: Automatisierung und Konfiguration
 - **YAML**: Für Playbooks, Variablen und Inventories
 - **Modularer Aufbau**: Jede Rolle ist ein eigenständiges Modul
+- **Tag-basierte Ausführung**: Einzelne Tools oder Phasen ausführbar
 
-## Patterns und Best Practices
+## Neue 3-Rollen-Architektur
 
 ### Benutzer-Management
-- **Zwei-Benutzer-System**: Trennung von ausführendem Benutzer (konfigurierbar via `ansible_user_name`) und Ziel-Benutzer (`target_user`)
-- **Zwei-Phasen-Deployment**: Erst Ansible-Benutzer anlegen, dann mit diesem arbeiten
-- **Pro-Host target_user**: Flexible Konfiguration je nach System (Server: `root`, Desktop: `thomas`)
-- **Konfigurierbarer Ansible-Benutzer**: Name über `ansible_user_name` anpassbar (Standard: "thomsible")
+- **Service-User-System**: `service_user` erstellt versteckten Automation-User
+- **Explizite Ziel-Definition**: `target_user` muss explizit gesetzt werden (keine Auto-Erkennung!)
+- **Drei-Phasen-Deployment**: Service-User → Target-User → Tools
+- **Sichere Trennung**: Service-User versteckt vor Login-Managern
 
-### Rollen-Design
-- **Eine Rolle pro Tool**: Jede Rolle installiert ein einzelnes Programm oder Tool
+### Rollen-Design (NEU!)
+- **Eine Datei pro Tool**: Jedes Tool hat eine eigene YAML-Datei (btop.yml, lazygit.yml, etc.)
+- **Gemeinsame Installation**: `github_tool_install.yml` für alle GitHub-Tools
+- **Shell-Integrationen**: Separate Dateien für Tool-spezifische Shell-Setups
 - **OS-Familie-Unterstützung**: Automatische Erkennung und Anpassung für Debian/Ubuntu vs RedHat/Fedora
-- **Variablen-Auslagerung**: OS-spezifische Variablen in separate `vars/` Dateien
-- **Target-User-Awareness**: Rollen arbeiten mit dem konfigurierten Ziel-Benutzer
+- **Fedora-Requirements**: Automatische Installation von `python3-libdnf5`
+- **Tag-basierte Ausführung**: Einzelne Tools oder Kategorien ausführbar
 
 ### Sicherheit
 - **SSH-Key-basierte Authentifizierung**: Passwort-Login wird deaktiviert

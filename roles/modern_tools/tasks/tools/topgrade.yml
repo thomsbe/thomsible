@@ -1,0 +1,13 @@
+---
+# Install topgrade - System upgrade tool
+# Repository: topgrade-rs/topgrade
+
+- name: "Install topgrade from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "topgrade"
+    tool_config:
+      repo: "topgrade-rs/topgrade"
+      asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "System upgrade tool"

@@ -1,0 +1,17 @@
+---
+# Install zoxide - Smart cd replacement
+# Repository: ajeetdsouza/zoxide
+
+- name: "Install zoxide from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "zoxide"
+    tool_config:
+      repo: "ajeetdsouza/zoxide"
+      asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Smart cd replacement"
+
+# Zoxide needs shell integration
+- name: "Setup zoxide shell integration"
+  ansible.builtin.include_tasks: ../shell_integrations/zoxide_integration.yml

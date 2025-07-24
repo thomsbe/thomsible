@@ -1,0 +1,40 @@
+---
+# Git Configuration for target user
+# Installs git and creates basic configuration
+
+- name: "Install git package"
+  ansible.builtin.package:
+    name: git
+    state: present
+
+- name: "Check if git is already configured for target user"
+  ansible.builtin.stat:
+    path: "{{ target_user_home }}/.gitconfig"
+  register: gitconfig_exists
+
+- name: "Create basic git configuration for target user"
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.gitconfig"
+    content: |
+      [user]
+          name = {{ target_user }}
+          email = {{ target_user }}@{{ ansible_hostname }}.local
+      [init]
+          defaultBranch = main
+      [pull]
+          rebase = false
+      [core]
+          editor = nano
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+  when: not gitconfig_exists.stat.exists
+
+- name: "Display git configuration"
+  ansible.builtin.debug:
+    msg: |
+      🔧 Git konfiguriert für {{ target_user }}:
+      - Name: {{ target_user }}
+      - Email: {{ target_user }}@{{ ansible_hostname }}.local
+      - Default Branch: main
+      - Editor: nano

@@ -1,0 +1,13 @@
+---
+# Install dust - Modern du replacement
+# Repository: bootandy/dust
+
+- name: "Install dust from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "dust"
+    tool_config:
+      repo: "bootandy/dust"
+      asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Modern du replacement"

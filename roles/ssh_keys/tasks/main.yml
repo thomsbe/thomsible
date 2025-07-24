@@ -35,9 +35,11 @@
     key: "{{ tbaer_ssh_pubkey }}"
     comment: "tbaer key added by thomsible"
 
-- name: Disable password authentication for target user
-  ansible.builtin.user:
-    name: "{{ target_user }}"
-    password: '!'
-  when: target_user != "root"  # Vorsicht bei root - nur wenn explizit gewünscht
+# REMOVED: This task was blocking ALL password logins (including local console/KDE)
+# Password disabling should only affect SSH, not local system login
+# - name: Disable password authentication for target user
+#   ansible.builtin.user:
+#     name: "{{ target_user }}"
+#     password: '!'
+#   when: target_user != "root"  # Vorsicht bei root - nur wenn explizit gewünscht
 

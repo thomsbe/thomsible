@@ -1,0 +1,11 @@
+---
+# Debian/Ubuntu specific variables for service_user role
+
+# Sudo group name
+sudo_group: "sudo"
+
+# Whether to install sudo package
+install_sudo_package: true
+
+# Shell for service user (no interactive login)
+service_user_shell: "/usr/sbin/nologin"

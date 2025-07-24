@@ -1,0 +1,13 @@
+---
+# Install fd - Modern find replacement
+# Repository: sharkdp/fd
+
+- name: "Install fd from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "fd"
+    tool_config:
+      repo: "sharkdp/fd"
+      asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Modern find replacement"

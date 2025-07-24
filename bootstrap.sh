@@ -20,9 +20,9 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Standard-Werte
-PLAYBOOK="bootstrap_local.yml"
+PLAYBOOK="bootstrap_new.yml"
 TARGET_USER=""
-SKIP_ANSIBLE_USER=""
+SKIP_SERVICE_USER=""
 EXTRA_VARS=""
 VERBOSE=""
 
@@ -43,21 +43,22 @@ print_usage() {
     echo "  $0 [OPTIONEN]"
     echo ""
     echo -e "${CYAN}Optionen:${NC}"
-    echo "  --tools-only              Nur CLI-Tools installieren (ohne Ansible-Benutzer)"
-    echo "  --user USERNAME           Ziel-Benutzer (Standard: aktueller Benutzer)"
-    echo "  --skip-ansible-user       Ansible-Benutzer nicht erstellen"
+    echo "  --tools-only              Nur CLI-Tools installieren (ohne Service-Benutzer)"
+    echo "  --user USERNAME           Ziel-Benutzer (MUSS explizit gesetzt werden!)"
+    echo "  --skip-service-user       Service-Benutzer nicht erstellen"
     echo "  --verbose, -v             Verbose Ansible-Ausgabe"
     echo "  --help, -h                Diese Hilfe anzeigen"
     echo ""
     echo -e "${CYAN}Beispiele:${NC}"
     echo "  $0                        # Vollständiges Bootstrap für aktuellen Benutzer"
-    echo "  $0 --tools-only           # Nur Tools installieren"
-    echo "  $0 --user thomas          # Bootstrap für Benutzer 'thomas'"
+    echo "  $0 --user thomas          # Bootstrap für Benutzer 'thomas' (ERFORDERLICH!)"
     echo "  $0 --tools-only --user thomas  # Nur Tools für 'thomas'"
+    echo "  $0 --skip-service-user --user thomas  # Ohne Service-User"
     echo ""
     echo -e "${CYAN}Was wird installiert:${NC}"
     echo "  • uv (Python Package Manager)"
     echo "  • Ansible (via uv)"
+    echo "  • Service-User (thomsible) für Ansible-Automatisierung"
     echo "  • 18 moderne CLI-Tools (lazygit, starship, btop, fzf, etc.)"
     echo "  • Fish shell mit moderner Konfiguration"
     echo "  • Git-Konfiguration"
@@ -236,11 +237,11 @@ run_ansible() {
         log_info "Verwende direkt installiertes Ansible"
     fi
 
-    # Automatisch den echten Benutzer erkennen (nicht root bei sudo)
-    local real_user="${SUDO_USER:-$USER}"
+    # TARGET_USER muss explizit gesetzt werden (keine Auto-Erkennung mehr!)
     if [[ -z "$TARGET_USER" ]]; then
-        EXTRA_VARS="${EXTRA_VARS}target_user=$real_user "
-        log_info "Automatisch erkannter Ziel-Benutzer: $real_user"
+        log_error "target_user muss explizit gesetzt werden!"
+        log_info "Beispiel: $0 --user thomas"
+        return 1
     fi
 
     # Füge Extra-Variablen hinzu
@@ -299,15 +300,15 @@ main() {
     while [[ $# -gt 0 ]]; do
         case $1 in
             --tools-only)
-                PLAYBOOK="bootstrap_tools_only.yml"
+                PLAYBOOK="bootstrap_tools_new.yml"
                 shift
                 ;;
             --user)
                 TARGET_USER="$2"
                 shift 2
                 ;;
-            --skip-ansible-user)
-                SKIP_ANSIBLE_USER="true"
+            --skip-service-user)
+                SKIP_SERVICE_USER="true"
                 shift
                 ;;
             --verbose|-v)
@@ -329,10 +330,14 @@ main() {
     # Extra-Variablen zusammenbauen
     if [[ -n "$TARGET_USER" ]]; then
         EXTRA_VARS="${EXTRA_VARS}target_user=$TARGET_USER "
+    else
+        log_error "target_user muss explizit gesetzt werden!"
+        log_info "Beispiel: $0 --user thomas"
+        exit 1
     fi
 
-    if [[ -n "$SKIP_ANSIBLE_USER" ]]; then
-        EXTRA_VARS="${EXTRA_VARS}skip_ansible_user=true "
+    if [[ -n "$SKIP_SERVICE_USER" ]]; then
+        EXTRA_VARS="${EXTRA_VARS}create_service_user=false "
     fi
 
     # Entferne trailing space

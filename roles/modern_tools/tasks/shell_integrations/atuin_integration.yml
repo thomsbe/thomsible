@@ -1,0 +1,35 @@
+---
+# Atuin Shell Integration
+# Sets up atuin for bash and fish shells
+
+- name: "Initialize atuin in bash"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: 'eval "$(atuin init bash)"'
+    regexp: ".*atuin init bash.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+
+- name: "Initialize atuin in fish"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/config.fish"
+    line: 'atuin init fish | source'
+    regexp: ".*atuin init fish.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+
+- name: "Display atuin setup info"
+  ansible.builtin.debug:
+    msg: |
+      🔍 Atuin Shell History Setup:
+      - Bash integration: ~/.bashrc
+      - Fish integration: ~/.config/fish/config.fish
+      
+      Nach dem Login:
+      1. atuin register  # Account erstellen
+      2. atuin login     # Anmelden
+      3. atuin sync      # History synchronisieren

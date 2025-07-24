@@ -1,0 +1,13 @@
+---
+# Install eza - Modern ls replacement
+# Repository: eza-community/eza
+
+- name: "Install eza from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "eza"
+    tool_config:
+      repo: "eza-community/eza"
+      asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Modern ls replacement"

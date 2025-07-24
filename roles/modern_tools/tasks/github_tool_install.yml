@@ -1,0 +1,127 @@
+---
+# Gemeinsame GitHub Tool Installation
+# Wird von den einzelnen Tool-Dateien inkludiert
+# Parameter: tool_name, tool_config
+
+- name: "Check if {{ tool_name }} already exists"
+  ansible.builtin.command: "which -a {{ tool_config.binary_name | default(tool_name) }}"
+  register: tool_check
+  failed_when: false
+  changed_when: false
+  when: github_tools_check_conflicts | default(true)
+
+- name: "Warn about existing {{ tool_name }} installation"
+  ansible.builtin.fail:
+    msg: |
+      ⚠️ {{ tool_name }} ist bereits installiert!
+      Gefunden in: {{ tool_check.stdout_lines | join(', ') }}
+      
+      Bitte entfernen Sie bestehende Installationen:
+      sudo apt remove {{ tool_name }}  # oder
+      sudo dnf remove {{ tool_name }}  # oder
+      rm {{ tool_check.stdout_lines[0] }}
+      
+      Dann erneut ausführen.
+  when: 
+    - github_tools_check_conflicts | default(true)
+    - tool_check.rc == 0
+    - tool_check.stdout_lines | length > 0
+
+- name: "Get latest release info for {{ tool_name }}"
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
+    headers:
+      Authorization: "token {{ github_token }}"
+    return_content: yes
+  register: release_info
+  when: github_token is defined and github_token != ""
+
+- name: "Get latest release info for {{ tool_name }} (without token)"
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ tool_config.repo }}/releases/latest"
+    return_content: yes
+  register: release_info
+  when: github_token is not defined or github_token == ""
+
+- name: "Find matching asset for {{ tool_name }}"
+  ansible.builtin.set_fact:
+    download_url: "{{ item.browser_download_url }}"
+    asset_name: "{{ item.name }}"
+  loop: "{{ release_info.json.assets }}"
+  when: item.name is regex(tool_config.asset_pattern)
+
+- name: "Fail if no matching asset found for {{ tool_name }}"
+  ansible.builtin.fail:
+    msg: |
+      Kein passendes Asset für {{ tool_name }} gefunden!
+      Pattern: {{ tool_config.asset_pattern }}
+      Verfügbare Assets: {{ release_info.json.assets | map(attribute='name') | list }}
+  when: download_url is not defined
+
+- name: "Create temp directory for {{ tool_name }}"
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: "_{{ tool_name }}"
+  register: temp_dir
+
+- name: "Download {{ tool_name }} {{ release_info.json.tag_name }}"
+  ansible.builtin.get_url:
+    url: "{{ download_url }}"
+    dest: "{{ temp_dir.path }}/{{ asset_name }}"
+    mode: '0644'
+
+- name: "Extract {{ tool_name }} archive"
+  ansible.builtin.unarchive:
+    src: "{{ temp_dir.path }}/{{ asset_name }}"
+    dest: "{{ temp_dir.path }}"
+    remote_src: yes
+  when: tool_config.archive_extension != "binary"
+
+- name: "Find {{ tool_name }} binary in extracted files"
+  ansible.builtin.find:
+    paths: "{{ temp_dir.path }}"
+    patterns: "{{ tool_config.binary_name | default(tool_name) }}"
+    recurse: yes
+    file_type: file
+  register: binary_search
+  when: tool_config.archive_extension != "binary"
+
+- name: "Set binary path for archive"
+  ansible.builtin.set_fact:
+    binary_path: "{{ binary_search.files[0].path }}"
+  when: 
+    - tool_config.archive_extension != "binary"
+    - binary_search.files | length > 0
+
+- name: "Set binary path for direct binary"
+  ansible.builtin.set_fact:
+    binary_path: "{{ temp_dir.path }}/{{ asset_name }}"
+  when: tool_config.archive_extension == "binary"
+
+- name: "Install {{ tool_name }} to {{ target_user_home }}/{{ github_tools_install_path }}"
+  ansible.builtin.copy:
+    src: "{{ binary_path }}"
+    dest: "{{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}"
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+    remote_src: yes
+
+- name: "Cleanup temp directory for {{ tool_name }}"
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+
+- name: "Verify {{ tool_name }} installation"
+  ansible.builtin.command: "{{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }} --version"
+  register: version_check
+  failed_when: false
+  changed_when: false
+  become_user: "{{ target_user }}"
+
+- name: "Display {{ tool_name }} installation result"
+  ansible.builtin.debug:
+    msg: |
+      ✅ {{ tool_name }} {{ release_info.json.tag_name }} installiert
+      Binary: {{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}
+      {% if version_check.rc == 0 %}Version: {{ version_check.stdout | regex_search('([0-9]+\.[0-9]+\.[0-9]+)') | default('unknown') }}{% endif %}

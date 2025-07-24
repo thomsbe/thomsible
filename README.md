@@ -4,13 +4,17 @@ Dieses Projekt sammelt Ansible-Rollen, um Desktop- und Server-Systeme mit den gl
 
 ## Kernkonzepte
 
-### Zwei-Benutzer-System
-- **Ausführender Benutzer**: Konfigurierbar via `ansible_user_name` (Standard: `thomsible`)
-- **Ziel-Benutzer**: `target_user` (dessen Konfiguration angepasst wird, z.B. `root`, `thomas`)
+### Drei-Rollen-System (NEU!)
+- **`service_user`**: Erstellt thomsible Service-User (versteckt vor Login)
+- **`target_user_config`**: Konfiguriert echten Benutzer (Fish shell, PATH)
+- **`modern_tools`**: Installiert 18 moderne CLI-Tools (einzelne Dateien pro Tool)
 
-### Zwei-Phasen-Deployment
-1. **Phase 1**: `thomsible_user` Rolle als root ausführen (Ansible-Benutzer anlegen)
-2. **Phase 2**: Weitere Rollen als Ansible-Benutzer mit sudo ausführen (Ziel-Benutzer konfigurieren)
+⚠️ **WICHTIG**: `target_user` muss explizit gesetzt werden - keine Auto-Erkennung mehr!
+
+### Drei-Phasen-Deployment
+1. **Phase 1**: `service_user` - Erstellt thomsible Service-User (versteckt)
+2. **Phase 2**: `target_user_config` - Konfiguriert echten Benutzer
+3. **Phase 3**: `modern_tools` - Installiert moderne CLI-Tools
 
 ### Konfiguration des Ansible-Benutzers
 Der Name des Ansible-Benutzers kann über die Variable `ansible_user_name` angepasst werden:
@@ -43,14 +47,14 @@ Das einfachste Setup für neue Rechner:
 git clone https://github.com/thomsbe/thomsible.git
 cd thomsible
 
-# Bootstrap ausführen (installiert uv + Ansible + Tools)
-./bootstrap.sh
-
-# Oder nur Tools ohne Ansible-Benutzer
-./bootstrap.sh --tools-only
-
-# Für spezifischen Benutzer
+# Bootstrap ausführen (target_user MUSS gesetzt werden!)
 ./bootstrap.sh --user thomas
+
+# Oder nur Tools ohne Service-Benutzer
+./bootstrap.sh --tools-only --user thomas
+
+# Ohne Service-User
+./bootstrap.sh --skip-service-user --user thomas
 ```
 
 **Was das Script macht:**
@@ -81,25 +85,25 @@ gh auth login
 
 Für neue Rechner gibt es auch direkte Ansible-Playbooks:
 
-#### Vollständiges Bootstrap
+#### Vollständiges Bootstrap (NEU!)
 ```bash
-# Komplette Installation mit Ansible-Benutzer
-sudo ansible-playbook bootstrap_local.yml --ask-become-pass
+# Komplette Installation mit Service-User (target_user ERFORDERLICH!)
+sudo ansible-playbook bootstrap_new.yml -e "target_user=thomas" --ask-become-pass
 
-# Nur für aktuellen Benutzer (ohne Ansible-Benutzer)
-sudo ansible-playbook bootstrap_local.yml -e "skip_ansible_user=true" --ask-become-pass
+# Ohne Service-User
+sudo ansible-playbook bootstrap_new.yml -e "target_user=thomas" -e "create_service_user=false" --ask-become-pass
 
-# Für spezifischen Benutzer
-sudo ansible-playbook bootstrap_local.yml -e "target_user=thomas" --ask-become-pass
+# Mit Tags nur bestimmte Phasen
+sudo ansible-playbook bootstrap_new.yml -e "target_user=thomas" --tags "modern_tools" --ask-become-pass
 ```
 
-#### Nur Tools installieren
+#### Nur Tools installieren (NEU!)
 ```bash
 # Schnelle Installation nur der CLI-Tools
-sudo ansible-playbook bootstrap_tools_only.yml --ask-become-pass
+sudo ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas" --ask-become-pass
 
-# Für spezifischen Benutzer
-sudo ansible-playbook bootstrap_tools_only.yml -e "target_user=thomas" --ask-become-pass
+# Mit einzelnen Tools
+sudo ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas" --tags "lazygit,starship,btop" --ask-become-pass
 ```
 
 **Was wird installiert:**
@@ -136,16 +140,19 @@ Zugriff auf einen Container:
 docker exec -it debian11 bash
 ```
 
-## Verfügbare Rollen
+## Verfügbare Rollen (NEU!)
 
-### Core-Rollen
-- **`thomsible_user`**: Erstellt Ansible-Benutzer mit SSH-Zugang und sudo-Berechtigung
-- **`ssh_keys`**: Konfiguriert SSH-Keys für Ziel-Benutzer und deaktiviert Passwort-Login
-- **`user_config`**: Installiert fish shell, konfiguriert PATH für GitHub-Tools
-- **`git`**: Installiert und konfiguriert Git für Ziel-Benutzer
+### Neue 3-Rollen-Struktur
+- **`service_user`**: Erstellt thomsible Service-User (versteckt vor Login, SSH-Keys, sudo)
+- **`target_user_config`**: Konfiguriert echten Benutzer (Fish shell, PATH, explizite Definition)
+- **`modern_tools`**: Installiert moderne CLI-Tools (einzelne Dateien pro Tool mit Tags)
 
-### GitHub-Tool-Rollen
-- **`github_tools`**: Meta-Rolle für moderne CLI-Tools von GitHub und System-Tools
+### Legacy-Rollen (deprecated)
+- **`thomsible_user`**: ⚠️ Ersetzt durch `service_user`
+- **`ssh_keys`**: ⚠️ Integriert in `service_user`
+- **`user_config`**: ⚠️ Ersetzt durch `target_user_config`
+- **`git`**: ⚠️ Integriert in `modern_tools`
+- **`github_tools`**: ⚠️ Ersetzt durch `modern_tools`
 
 ## Installierte Tools
 
@@ -169,8 +176,8 @@ Die `github_tools` Rolle installiert automatisch die neuesten Versionen folgende
 - **`dust`**: Moderner `du` Ersatz für Verzeichnisgrößen-Analyse
 
 #### Navigation & History
-- **`zoxide`**: Intelligenter `cd` Ersatz mit Lernfähigkeit (alias: `cd`)
-- **`mcfly`**: Intelligente Shell-History mit Kontext-Suche
+- **`zoxide`**: Intelligenter `cd` Ersatz mit Lernfähigkeit (Shell-Integration)
+- **`atuin`**: Magische Shell-History mit Sync-Funktionalität
 
 #### Documentation & Help
 - **`tealdeer`**: Schneller `tldr` Client für praktische Befehlsbeispiele

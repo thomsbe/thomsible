@@ -1,0 +1,96 @@
+---
+# Shell Integration and Aliases
+# Sets up shell aliases and integrations for installed tools
+
+- name: "Create bash aliases file"
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.bash_aliases"
+    content: |
+      # Modern CLI tool aliases (managed by thomsible)
+      {% if 'bat' in tools_to_install and create_shell_aliases %}
+      alias cat='bat'
+      {% endif %}
+      {% if 'eza' in tools_to_install and create_shell_aliases %}
+      alias ls='eza'
+      alias ll='eza -la'
+      alias la='eza -a'
+      {% endif %}
+      {% if 'dust' in tools_to_install and create_shell_aliases %}
+      alias du='dust'
+      {% endif %}
+      {% if 'procs' in tools_to_install and create_shell_aliases %}
+      alias ps='procs'
+      {% endif %}
+      {% if 'duf' in tools_to_install and create_shell_aliases %}
+      alias df='duf'
+      {% endif %}
+      {% if 'dog' in tools_to_install and create_shell_aliases %}
+      alias dig='dog'
+      {% endif %}
+      {% if 'topgrade' in tools_to_install and create_shell_aliases %}
+      alias tg='topgrade'
+      {% endif %}
+      {% if 'tealdeer' in tools_to_install and create_shell_aliases %}
+      alias tldr='tealdeer'
+      {% endif %}
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+  when: create_shell_aliases | default(true)
+
+- name: "Ensure bash aliases are sourced in .bashrc"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: "[ -f ~/.bash_aliases ] && . ~/.bash_aliases"
+    regexp: ".*bash_aliases.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+  when: create_shell_aliases | default(true)
+
+- name: "Create fish aliases file"
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.config/fish/conf.d/modern_tools_aliases.fish"
+    content: |
+      # Modern CLI tool aliases (managed by thomsible)
+      {% if 'bat' in tools_to_install and create_shell_aliases %}
+      alias cat='bat'
+      {% endif %}
+      {% if 'eza' in tools_to_install and create_shell_aliases %}
+      alias ls='eza'
+      alias ll='eza -la'
+      alias la='eza -a'
+      {% endif %}
+      {% if 'dust' in tools_to_install and create_shell_aliases %}
+      alias du='dust'
+      {% endif %}
+      {% if 'procs' in tools_to_install and create_shell_aliases %}
+      alias ps='procs'
+      {% endif %}
+      {% if 'duf' in tools_to_install and create_shell_aliases %}
+      alias df='duf'
+      {% endif %}
+      {% if 'dog' in tools_to_install and create_shell_aliases %}
+      alias dig='dog'
+      {% endif %}
+      {% if 'topgrade' in tools_to_install and create_shell_aliases %}
+      alias tg='topgrade'
+      {% endif %}
+      {% if 'tealdeer' in tools_to_install and create_shell_aliases %}
+      alias tldr='tealdeer'
+      {% endif %}
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+  when: create_shell_aliases | default(true)
+
+- name: "Display shell integration setup"
+  ansible.builtin.debug:
+    msg: |
+      🐚 Shell-Integration konfiguriert:
+      - Bash aliases: ~/.bash_aliases
+      - Fish aliases: ~/.config/fish/conf.d/modern_tools_aliases.fish
+      {% if create_shell_aliases %}
+      - Moderne Ersetzungen aktiviert (cat→bat, ls→eza, etc.)
+      {% endif %}

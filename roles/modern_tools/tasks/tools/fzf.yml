@@ -1,0 +1,13 @@
+---
+# Install fzf - Command-line fuzzy finder
+# Repository: junegunn/fzf
+
+- name: "Install fzf from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "fzf"
+    tool_config:
+      repo: "junegunn/fzf"
+      asset_pattern: ".*linux_amd64.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Command-line fuzzy finder"

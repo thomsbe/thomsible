@@ -1,0 +1,11 @@
+---
+# Fedora Requirements for Ansible
+# This task ensures required packages are installed on Fedora systems
+# Include this in roles that use dnf module
+
+- name: "Install required packages for Ansible on Fedora"
+  ansible.builtin.dnf:
+    name:
+      - python3-libdnf5  # Required for Ansible dnf module on Fedora
+    state: present
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Fedora"

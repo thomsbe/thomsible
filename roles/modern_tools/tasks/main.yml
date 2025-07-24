@@ -1,0 +1,154 @@
+---
+# Modern Tools Role
+# Installiert moderne CLI-Tools für den target_user
+# Jedes Tool hat eine eigene Datei für bessere Organisation
+
+- name: "Validate target_user is defined"
+  ansible.builtin.fail:
+    msg: |
+      target_user muss explizit definiert werden!
+      Beispiel: -e "target_user=thomas"
+  when: target_user is not defined or target_user == ""
+
+- name: "Get target user information"
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ target_user }}"
+  register: target_user_info
+
+- name: "Set target user home directory"
+  ansible.builtin.set_fact:
+    target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+
+- name: "Display modern tools configuration"
+  ansible.builtin.debug:
+    msg: |
+      🛠️ MODERN TOOLS INSTALLATION
+      Target User: {{ target_user }}
+      Home: {{ target_user_home }}
+      Install Path: {{ target_user_home }}/{{ github_tools_install_path }}
+      Tools to install: {{ tools_to_install | length }} tools
+
+- name: "Install required packages for Ansible on Fedora"
+  ansible.builtin.dnf:
+    name:
+      - python3-libdnf5  # Required for Ansible dnf module
+    state: present
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Fedora"
+
+- name: "Ensure install directory exists"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/{{ github_tools_install_path }}"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+
+# GitHub Tools (einzelne Dateien)
+- name: "Install lazygit"
+  ansible.builtin.include_tasks: tools/lazygit.yml
+  when: "'lazygit' in tools_to_install"
+  tags: [lazygit, github_tools]
+
+- name: "Install starship"
+  ansible.builtin.include_tasks: tools/starship.yml
+  when: "'starship' in tools_to_install"
+  tags: [starship, github_tools]
+
+- name: "Install btop"
+  ansible.builtin.include_tasks: tools/btop.yml
+  when: "'btop' in tools_to_install"
+  tags: [btop, github_tools]
+
+- name: "Install fzf"
+  ansible.builtin.include_tasks: tools/fzf.yml
+  when: "'fzf' in tools_to_install"
+  tags: [fzf, github_tools]
+
+- name: "Install bat"
+  ansible.builtin.include_tasks: tools/bat.yml
+  when: "'bat' in tools_to_install"
+  tags: [bat, github_tools]
+
+- name: "Install eza"
+  ansible.builtin.include_tasks: tools/eza.yml
+  when: "'eza' in tools_to_install"
+  tags: [eza, github_tools]
+
+- name: "Install fd"
+  ansible.builtin.include_tasks: tools/fd.yml
+  when: "'fd' in tools_to_install"
+  tags: [fd, github_tools]
+
+- name: "Install ripgrep"
+  ansible.builtin.include_tasks: tools/ripgrep.yml
+  when: "'ripgrep' in tools_to_install"
+  tags: [ripgrep, github_tools]
+
+- name: "Install dust"
+  ansible.builtin.include_tasks: tools/dust.yml
+  when: "'dust' in tools_to_install"
+  tags: [dust, github_tools]
+
+- name: "Install procs"
+  ansible.builtin.include_tasks: tools/procs.yml
+  when: "'procs' in tools_to_install"
+  tags: [procs, github_tools]
+
+- name: "Install zoxide"
+  ansible.builtin.include_tasks: tools/zoxide.yml
+  when: "'zoxide' in tools_to_install"
+  tags: [zoxide, github_tools]
+
+- name: "Install atuin"
+  ansible.builtin.include_tasks: tools/atuin.yml
+  when: "'atuin' in tools_to_install"
+  tags: [atuin, github_tools]
+
+- name: "Install tealdeer"
+  ansible.builtin.include_tasks: tools/tealdeer.yml
+  when: "'tealdeer' in tools_to_install"
+  tags: [tealdeer, github_tools]
+
+- name: "Install duf"
+  ansible.builtin.include_tasks: tools/duf.yml
+  when: "'duf' in tools_to_install"
+  tags: [duf, github_tools]
+
+- name: "Install gping"
+  ansible.builtin.include_tasks: tools/gping.yml
+  when: "'gping' in tools_to_install"
+  tags: [gping, github_tools]
+
+- name: "Install dog"
+  ansible.builtin.include_tasks: tools/dog.yml
+  when: "'dog' in tools_to_install"
+  tags: [dog, github_tools]
+
+- name: "Install termshark"
+  ansible.builtin.include_tasks: tools/termshark.yml
+  when: "'termshark' in tools_to_install"
+  tags: [termshark, github_tools]
+
+- name: "Install topgrade"
+  ansible.builtin.include_tasks: tools/topgrade.yml
+  when: "'topgrade' in tools_to_install"
+  tags: [topgrade, github_tools]
+
+# System Tools
+- name: "Install system tools"
+  ansible.builtin.include_tasks: system_tools.yml
+  when: install_system_tools | default(true)
+  tags: [system_tools]
+
+# Git configuration
+- name: "Configure git"
+  ansible.builtin.include_tasks: git_config.yml
+  when: configure_git | default(true)
+  tags: [git_config]
+
+# Shell aliases and integrations
+- name: "Setup shell aliases and integrations"
+  ansible.builtin.include_tasks: shell_integration.yml
+  when: setup_shell_integration | default(true)
+  tags: [shell_integration, aliases]

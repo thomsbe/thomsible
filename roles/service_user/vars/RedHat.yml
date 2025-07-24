@@ -1,0 +1,11 @@
+---
+# RedHat/Fedora specific variables for service_user role
+
+# Sudo group name
+sudo_group: "wheel"
+
+# Whether to install sudo package (usually pre-installed)
+install_sudo_package: false
+
+# Shell for service user (no interactive login)
+service_user_shell: "/sbin/nologin"

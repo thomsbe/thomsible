@@ -1,0 +1,14 @@
+---
+# Install ripgrep - Fast grep replacement
+# Repository: BurntSushi/ripgrep
+
+- name: "Install ripgrep from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "ripgrep"
+    tool_config:
+      repo: "BurntSushi/ripgrep"
+      asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+      archive_extension: "tar.gz"
+      binary_name: "rg"  # The actual binary name in the archive
+      description: "Fast grep replacement"

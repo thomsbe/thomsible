@@ -1,0 +1,37 @@
+---
+# Zoxide Shell Integration
+# Sets up zoxide for bash and fish shells
+
+- name: "Initialize zoxide in bash with cd replacement"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: 'eval "$(zoxide init bash --cmd cd)"'
+    regexp: ".*zoxide init bash.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+
+- name: "Initialize zoxide in fish with cd replacement"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/config.fish"
+    line: 'zoxide init fish --cmd cd | source'
+    regexp: ".*zoxide init fish.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+
+- name: "Display zoxide setup info"
+  ansible.builtin.debug:
+    msg: |
+      📁 Zoxide Smart Directory Navigation:
+      - Bash integration: ~/.bashrc (mit --cmd cd)
+      - Fish integration: ~/.config/fish/config.fish (mit --cmd cd)
+
+      Verwendung:
+      - cd <directory>  # Normales cd + zoxide learning
+      - cd <partial>    # Springe zu häufig besuchtem Verzeichnis
+      - cdi             # Interaktive Auswahl (falls verfügbar)
+
+      Nach Shell-Neustart funktioniert 'cd' intelligent!

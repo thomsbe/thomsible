@@ -1,0 +1,107 @@
+---
+# Service User Role
+# Erstellt den thomsible Service-User für Ansible-Automatisierung
+# - Reiner Service-User (nicht in KDE Login-Liste)
+# - SSH-Key-basierte Authentifizierung
+# - Passwortloses sudo
+
+- name: "Include OS-specific variables"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "Display service user configuration"
+  ansible.builtin.debug:
+    msg: |
+      🔧 SERVICE USER CONFIGURATION
+      User: {{ ansible_user_name }}
+      SSH Key: {{ ansible_user_ssh_pubkey[:50] }}...
+      Sudo Group: {{ sudo_group }}
+      Shell: {{ service_user_shell }}
+
+- name: "Install required packages for Ansible on Fedora"
+  ansible.builtin.dnf:
+    name:
+      - python3-libdnf5  # Required for Ansible dnf module
+      - sudo
+    state: present
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Fedora"
+
+- name: "Install sudo package if needed (Debian/Ubuntu)"
+  ansible.builtin.package:
+    name: sudo
+    state: present
+  when: install_sudo_package | bool and ansible_os_family == "Debian"
+
+- name: "Ensure service user exists"
+  ansible.builtin.user:
+    name: "{{ ansible_user_name }}"
+    shell: "{{ service_user_shell }}"
+    groups: "{{ sudo_group }}"
+    append: yes
+    state: present
+    create_home: yes
+    comment: "Thomsible Automation Service User"
+
+- name: "Ensure .ssh directory exists for service user"
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_name }}/.ssh"
+    state: directory
+    owner: "{{ ansible_user_name }}"
+    group: "{{ ansible_user_name }}"
+    mode: '0700'
+
+- name: "Set authorized key for service user"
+  ansible.builtin.authorized_key:
+    user: "{{ ansible_user_name }}"
+    state: present
+    key: "{{ ansible_user_ssh_pubkey }}"
+    comment: "thomsible automation key"
+
+- name: "Allow service user passwordless sudo"
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ ansible_user_name }}"
+    content: "{{ ansible_user_name }} ALL=(ALL) NOPASSWD:ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: 'visudo -cf %s'
+
+- name: "Disable password login for service user"
+  ansible.builtin.user:
+    name: "{{ ansible_user_name }}"
+    password: '!'  # Sperrt Passwort-Login (nur SSH-Keys)
+
+- name: "Hide service user from login managers (GDM/SDDM)"
+  ansible.builtin.copy:
+    dest: "/var/lib/AccountsService/users/{{ ansible_user_name }}"
+    content: |
+      [User]
+      SystemAccount=true
+      Hidden=true
+    owner: root
+    group: root
+    mode: '0644'
+  ignore_errors: yes  # Falls AccountsService nicht verfügbar
+
+- name: "Create service user marker file"
+  ansible.builtin.copy:
+    dest: "/home/{{ ansible_user_name }}/.thomsible_service_user"
+    content: |
+      # Thomsible Service User
+      # Created: {{ ansible_date_time.iso8601 }}
+      # Purpose: Ansible automation
+      # SSH-Key: {{ ansible_user_ssh_pubkey.split()[2] | default('unknown') }}
+      # 
+      # This is a service account for automation.
+      # It should not be used for interactive login.
+    owner: "{{ ansible_user_name }}"
+    group: "{{ ansible_user_name }}"
+    mode: '0644'
+
+- name: "Verify service user configuration"
+  ansible.builtin.debug:
+    msg: |
+      ✅ Service User {{ ansible_user_name }} erfolgreich konfiguriert:
+      - SSH-Key installiert
+      - Passwortloses sudo aktiviert
+      - Passwort-Login deaktiviert
+      - Versteckt vor Login-Managern

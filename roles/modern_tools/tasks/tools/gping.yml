@@ -1,0 +1,13 @@
+---
+# Install gping - Ping with graph
+# Repository: orf/gping
+
+- name: "Install gping from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "gping"
+    tool_config:
+      repo: "orf/gping"
+      asset_pattern: "^gping-Linux-gnu-x86_64.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Ping with graph"

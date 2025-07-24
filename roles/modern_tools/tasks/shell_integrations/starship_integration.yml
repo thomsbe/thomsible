@@ -1,0 +1,40 @@
+---
+# Starship Shell Integration
+# Sets up starship prompt for bash and fish shells
+
+- name: "Create starship config directory"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+
+- name: "Setup starship configuration"
+  ansible.builtin.copy:
+    src: starship.toml
+    dest: "{{ target_user_home }}/.config/starship.toml"
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+    backup: yes
+
+- name: "Initialize starship in bash"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: 'eval "$(starship init bash)"'
+    regexp: ".*starship init bash.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+
+- name: "Initialize starship in fish"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/config.fish"
+    line: 'starship init fish | source'
+    regexp: ".*starship init fish.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes

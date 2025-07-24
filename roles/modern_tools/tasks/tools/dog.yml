@@ -1,0 +1,13 @@
+---
+# Install dog - Modern dig replacement
+# Repository: ogham/dog
+
+- name: "Install dog from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "dog"
+    tool_config:
+      repo: "ogham/dog"
+      asset_pattern: ".*x86_64-unknown-linux-gnu.zip$"
+      archive_extension: "zip"
+      description: "Modern dig replacement"

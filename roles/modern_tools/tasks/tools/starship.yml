@@ -1,0 +1,17 @@
+---
+# Install starship - Cross-shell prompt
+# Repository: starship/starship
+
+- name: "Install starship from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "starship"
+    tool_config:
+      repo: "starship/starship"
+      asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Cross-shell prompt"
+
+# Starship needs configuration and shell integration
+- name: "Setup starship configuration"
+  ansible.builtin.include_tasks: ../shell_integrations/starship_integration.yml

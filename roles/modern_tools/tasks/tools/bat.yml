@@ -1,0 +1,13 @@
+---
+# Install bat - Cat with syntax highlighting
+# Repository: sharkdp/bat
+
+- name: "Install bat from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "bat"
+    tool_config:
+      repo: "sharkdp/bat"
+      asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Cat with syntax highlighting"

@@ -1,0 +1,13 @@
+---
+# Install procs - Modern ps replacement
+# Repository: dalance/procs
+
+- name: "Install procs from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "procs"
+    tool_config:
+      repo: "dalance/procs"
+      asset_pattern: ".*x86_64-linux.zip$"
+      archive_extension: "zip"
+      description: "Modern ps replacement"

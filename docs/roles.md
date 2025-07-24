@@ -1,61 +1,71 @@
-# Rollen-Dokumentation
+# Rollen-Dokumentation (NEU!)
 
-## Übersicht der verfügbaren Rollen
+## Neue 3-Rollen-Struktur
 
-### Core-Rollen
+### Moderne Rollen
 
-#### `thomsible_user`
-**Zweck**: Erstellt den konfigurierbaren Ansible-Benutzer für Automatisierung
+#### `service_user` (NEU!)
+**Zweck**: Erstellt thomsible Service-User für Ansible-Automatisierung
 
 **Features**:
-- Erstellt Ansible-Benutzer mit konfigurierbarem Namen (Standard: `thomsible`)
+- Erstellt Service-User mit konfigurierbarem Namen (Standard: `thomsible`)
+- **Versteckt vor Login-Managern** (KDE/GNOME Login-Bildschirm)
+- **Shell**: `/usr/sbin/nologin` oder `/sbin/nologin` (keine interaktive Anmeldung)
+- SSH-Key-basierte Authentifizierung (kein Passwort-Login)
 - Konfiguriert passwortloses sudo
 - OS-Familie-spezifische Gruppenzuweisung (sudo/wheel)
-- Installiert sudo-Paket bei Bedarf (Debian/Ubuntu)
-- Deaktiviert Passwort-Login für Ansible-Benutzer
+- **Fedora-Requirements**: Installiert `python3-libdnf5` automatisch
 
 **Variablen**:
-- `ansible_user_name`: Name des Ansible-Benutzers (Standard: "thomsible")
-- `ansible_user_ssh_pubkey`: SSH-Public-Key für Ansible-Benutzer
-- `thomsible_ssh_pubkey`: Legacy-Variable (Rückwärtskompatibilität)
+- `ansible_user_name`: Name des Service-Users (Standard: "thomsible")
+- `ansible_user_ssh_pubkey`: SSH-Public-Key für Service-User
 
 **OS-Unterstützung**: Debian, Ubuntu, RedHat, Fedora
+**Tags**: `service_user`, `ssh_config`, `sudo_config`
 
 ---
 
-#### `ssh_keys`
-**Zweck**: Konfiguriert SSH-Zugang für Ziel-Benutzer
+#### `target_user_config` (NEU!)
+**Zweck**: Konfiguriert den echten Benutzer mit moderner Shell-Umgebung
 
 **Features**:
-- Fügt SSH-Key zu authorized_keys des Ziel-Benutzers hinzu
-- Erstellt .ssh Verzeichnis mit sicheren Berechtigungen
-- Deaktiviert Passwort-Login (außer für root)
-- Verifiziert SSH-Konfiguration
+- **Explizite Benutzer-Definition** (KEINE Auto-Erkennung mehr!)
+- **Fish shell** als Standard-Shell (außer für root)
+- **PATH-Konfiguration** für `~/.local/bin` (fish + bash)
+- **Basis-Verzeichnisse** erstellen (.config, .local/bin, tools)
+- **Sichere Berechtigungen** für alle erstellten Dateien
+- **Fedora-Requirements**: Installiert `python3-libdnf5` automatisch
 
 **Variablen**:
-- `target_user`: Ziel-Benutzer (pro Host konfiguriert)
-- `tbaer_ssh_pubkey`: SSH-Public-Key für Ziel-Benutzer
+- `target_user`: Der zu konfigurierende Benutzer (MUSS explizit gesetzt werden!)
 
-**Abhängigkeiten**: Ziel-Benutzer muss existieren
+**Validierung**: Fehler wenn `target_user` nicht definiert
+**Tags**: `target_user_config`, `shell_config`, `path_config`
 
 ---
 
-#### `user_config`
-**Zweck**: Konfiguriert Shell-Umgebung und PATH für Ziel-Benutzer
+#### `modern_tools` (NEU!)
+**Zweck**: Installiert moderne CLI-Tools mit einzelnen Tool-Dateien
 
 **Features**:
-- Installiert fish shell aus System-Repositories
-- Setzt fish als Standard-Shell (außer für root)
-- Konfiguriert PATH für `$HOME/local/bin` in fish und bash
-- Erstellt .config und tools Verzeichnisse
-- Erstellt Beispiel-Konfigurationsdatei
+- **18 moderne GitHub-Tools** (lazygit, starship, btop, fzf, bat, eza, etc.)
+- **Einzelne Tool-Dateien** (btop.yml, lazygit.yml, etc.) für bessere Organisation
+- **Gemeinsame GitHub-Installation** (`github_tool_install.yml`)
+- **System-Tools** via Package Manager (ncdu, lshw, mtr, etc.)
+- **Shell-Integration** (atuin, starship, zoxide)
+- **Git-Konfiguration** für target_user
+- **Shell-Aliases** für moderne Ersetzungen
+- **Konflikt-Erkennung** verhindert doppelte Installationen
+- **Fedora-Requirements**: Installiert `python3-libdnf5` automatisch
 
 **Variablen**:
-- `target_user`: Ziel-Benutzer (pro Host konfiguriert)
+- `target_user`: Der zu konfigurierende Benutzer (MUSS explizit gesetzt werden!)
+- `tools_to_install`: Liste der zu installierenden Tools
+- `github_token`: Optional für höhere GitHub API-Limits
+- `create_shell_aliases`: Shell-Aliases erstellen (Standard: true)
 
-**Shell-Konfiguration**:
-- Fish: `set -gx PATH $HOME/local/bin $PATH`
-- Bash: `export PATH="$HOME/local/bin:$PATH"`
+**Tags**: `modern_tools`, `github_tools`, `system_tools`, `shell_integration`, `git_config`
+**Einzelne Tool-Tags**: `lazygit`, `starship`, `btop`, `fzf`, `bat`, `eza`, etc.
 
 ---
 
@@ -96,7 +106,7 @@
 - **ripgrep**: Extrem schneller `grep` Ersatz
 - **dust**: Moderner `du` Ersatz
 - **zoxide**: Intelligenter `cd` Ersatz (alias: `cd`)
-- **mcfly**: Intelligente Shell-History
+- **atuin**: Magische Shell-History mit Sync
 - **tealdeer**: Schneller `tldr` Client
 - **dog**: Moderner `dig` Ersatz
 - **termshark**: Terminal-Wireshark

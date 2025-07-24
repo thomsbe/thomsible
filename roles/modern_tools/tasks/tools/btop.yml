@@ -1,0 +1,13 @@
+---
+# Install btop - Modern system monitor
+# Repository: aristocratos/btop
+
+- name: "Install btop from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "btop"
+    tool_config:
+      repo: "aristocratos/btop"
+      asset_pattern: ".*x86_64-linux-musl.tbz$"
+      archive_extension: "tbz"
+      description: "Modern system monitor"

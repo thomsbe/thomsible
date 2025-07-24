@@ -1,0 +1,129 @@
+---
+# Target User Configuration Role
+# Konfiguriert den echten Benutzer (explizit definiert, keine Auto-Erkennung)
+# - Fish shell als Standard
+# - PATH-Konfiguration für ~/.local/bin
+# - Basis-Verzeichnisse erstellen
+
+- name: "Validate target_user is defined"
+  ansible.builtin.fail:
+    msg: |
+      target_user muss explizit definiert werden!
+      Beispiel: -e "target_user=thomas"
+      KEINE Auto-Erkennung mehr aus Sicherheitsgründen!
+  when: target_user is not defined or target_user == ""
+
+- name: "Get target user information"
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ target_user }}"
+  register: target_user_info
+
+- name: "Set target user home directory"
+  ansible.builtin.set_fact:
+    target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
+
+- name: "Display target user configuration"
+  ansible.builtin.debug:
+    msg: |
+      🎯 TARGET USER CONFIGURATION
+      User: {{ target_user }}
+      Home: {{ target_user_home }}
+      Shell wird auf fish gesetzt (außer root)
+
+- name: "Install required packages for Ansible on Fedora"
+  ansible.builtin.dnf:
+    name:
+      - python3-libdnf5  # Required for Ansible dnf module
+      - fish
+    state: present
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Fedora"
+
+- name: "Install fish shell (Debian/Ubuntu)"
+  ansible.builtin.package:
+    name: fish
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: "Set fish as default shell for target user"
+  ansible.builtin.user:
+    name: "{{ target_user }}"
+    shell: /usr/bin/fish
+  when: target_user != "root"  # Vorsicht bei root
+
+- name: "Create .config directory for target user"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+
+- name: "Create fish config directory for target user"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config/fish"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+
+- name: "Create .local/bin directory for target user"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.local/bin"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+
+- name: "Add .local/bin to PATH in fish config"
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.config/fish/config.fish"
+    content: |
+      # Add .local/bin to PATH for modern CLI tools
+      if test -d $HOME/.local/bin
+          set -gx PATH $HOME/.local/bin $PATH
+      end
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+
+- name: "Add .local/bin to PATH in bash profile"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    regexp: '.*\.local/bin.*'
+    create: yes
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+
+- name: "Add .local/bin to PATH in bash profile (alternative)"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bash_profile"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    regexp: '.*\.local/bin.*'
+    create: yes
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'
+
+- name: "Create tools directory for target user"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/tools"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+
+- name: "Create managed marker file"
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.config/thomsible_managed"
+    content: |
+      # This user was configured by thomsible
+      # Target user: {{ target_user }}
+      # Managed by: {{ ansible_user_id }}
+      # Date: {{ ansible_date_time.iso8601 }}
+      # Role: target_user_config
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0644'

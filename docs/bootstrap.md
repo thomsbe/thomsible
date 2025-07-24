@@ -175,8 +175,8 @@ exec $SHELL
 - **fd**: Besseres `find`
 - **dust**: Disk-Usage-Analyzer
 - **procs**: Modernes `ps`
-- **zoxide**: Intelligentes `cd`
-- **mcfly**: AI-powered Shell-History
+- **zoxide**: Intelligentes `cd` (nach Shell-Neustart)
+- **atuin**: Magische Shell-History mit Sync
 - **tealdeer**: Schnelle `man`-Pages
 - **duf**: Modernes `df`
 - **gping**: `ping` mit Graphen
@@ -209,14 +209,21 @@ gh auth token
 # Token in group_vars/all.yml eintragen
 ```
 
-**3. Tool-Konflikte**
+**3. Fedora dnf-Module Fehler**
+```bash
+# Lösung: python3-libdnf5 installieren
+sudo dnf install python3-libdnf5
+# Wird automatisch von den Rollen installiert
+```
+
+**4. Tool-Konflikte**
 ```bash
 # Lösung: Bestehende Tools entfernen
 sudo apt remove btop  # Beispiel
 # Dann Bootstrap erneut ausführen
 ```
 
-**4. PATH nicht aktualisiert**
+**5. PATH nicht aktualisiert**
 ```bash
 # Lösung: Shell neustarten
 exec $SHELL

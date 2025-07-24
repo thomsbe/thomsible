@@ -5,18 +5,19 @@ Diese Rolle konfiguriert SSH-Zugang für den Ziel-Benutzer (target_user).
 ## Features
 - Erstellt `.ssh` Verzeichnis für den Ziel-Benutzer
 - Fügt den `tbaer_ssh_pubkey` zu den authorized_keys hinzu
-- Deaktiviert Passwort-Login für den Ziel-Benutzer (außer root)
 - Setzt korrekte Berechtigungen für SSH-Dateien
 - Verifiziert die SSH-Konfiguration
+
+**HINWEIS**: Passwort-Deaktivierung wurde entfernt, da sie alle Logins (auch lokale Konsole) blockiert!
 
 ## Variablen
 - `target_user`: Der Benutzer, für den SSH konfiguriert werden soll (wird pro Host im Inventory gesetzt)
 - `tbaer_ssh_pubkey`: Der SSH-Public-Key der hinzugefügt werden soll (aus `group_vars/all.yml`)
 
 ## Sicherheitshinweise
-- Passwort-Login wird nur für Nicht-Root-Benutzer deaktiviert
 - SSH-Verzeichnis erhält sichere Berechtigungen (700)
 - Authorized_keys Datei wird automatisch mit korrekten Berechtigungen erstellt
+- **WICHTIG**: Passwort-Deaktivierung wurde entfernt - sie blockierte alle Logins!
 
 ## Beispiel Inventory
 ```ini

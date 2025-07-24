@@ -1,0 +1,13 @@
+---
+# Install termshark - Terminal Wireshark
+# Repository: gcla/termshark
+
+- name: "Install termshark from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "termshark"
+    tool_config:
+      repo: "gcla/termshark"
+      asset_pattern: ".*linux_x64.tar.gz$"
+      archive_extension: "tar.gz"
+      description: "Terminal Wireshark"

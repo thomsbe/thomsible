@@ -90,3 +90,47 @@
     group: "{{ target_user_group_name }}"
     create: yes
   when: "'starship' in github_tools_to_install"
+
+- name: "Initialize atuin in bash"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: 'eval "$(atuin init bash)"'
+    regexp: ".*atuin init bash.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+  when: "'atuin' in github_tools_to_install"
+
+- name: "Initialize atuin in fish"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/config.fish"
+    line: 'atuin init fish | source'
+    regexp: ".*atuin init fish.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+  when: "'atuin' in github_tools_to_install"
+
+- name: "Initialize zoxide in bash with cd replacement"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bashrc"
+    line: 'eval "$(zoxide init bash --cmd cd)"'
+    regexp: ".*zoxide init bash.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+  when: "'zoxide' in github_tools_to_install"
+
+- name: "Initialize zoxide in fish with cd replacement"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/config.fish"
+    line: 'zoxide init fish --cmd cd | source'
+    regexp: ".*zoxide init fish.*"
+    state: present
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    create: yes
+  when: "'zoxide' in github_tools_to_install"

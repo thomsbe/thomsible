@@ -1,0 +1,13 @@
+---
+# Install tealdeer - Practical command examples
+# Repository: tealdeer-rs/tealdeer
+
+- name: "Install tealdeer from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml
+  vars:
+    tool_name: "tealdeer"
+    tool_config:
+      repo: "tealdeer-rs/tealdeer"
+      asset_pattern: "^tealdeer-linux-x86_64-musl$"
+      archive_extension: "binary"
+      description: "Practical command examples"

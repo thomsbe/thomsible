@@ -1,0 +1,48 @@
+---
+# Install system tools that are not available from GitHub releases
+# These tools are installed via package managers
+
+- name: "Install system tools on Debian/Ubuntu"
+  ansible.builtin.apt:
+    name:
+      - ncdu          # Interactive disk usage
+      - lshw          # Hardware information
+      - mtr           # Network tracing (traceroute + ping)
+      - glances       # System monitoring
+      - dstat         # System statistics
+      - python3-pip   # For Python tools
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: "Install system tools on RedHat/Fedora"
+  ansible.builtin.dnf:
+    name:
+      - ncdu          # Interactive disk usage
+      - lshw          # Hardware information
+      - mtr           # Network tracing (traceroute + ping)
+      - glances       # System monitoring
+      - dstat         # System statistics
+      - python3-pip   # For Python tools
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: "Install Python tools via pip"
+  ansible.builtin.pip:
+    name:
+      - magic-wormhole  # Secure file transfer
+      - unp             # Universal unpacker
+    state: present
+    executable: pip3
+
+- name: "Display system tools installation"
+  ansible.builtin.debug:
+    msg: |
+      📦 System Tools installiert:
+      - ncdu: Interaktive Festplattenspeicher-Analyse
+      - lshw: Hardware-Informationen
+      - mtr: Kombiniert ping und traceroute
+      - glances: System-Monitoring Dashboard
+      - dstat: Live System-Statistiken
+      - magic-wormhole: Sichere Dateiübertragung
+      - unp: Universeller Archiv-Extraktor
