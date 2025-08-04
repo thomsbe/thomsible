@@ -9,7 +9,7 @@
     regexp: ".*zoxide init bash.*"
     state: present
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     create: true
     mode: '0644'
 
@@ -18,7 +18,7 @@
     path: "{{ target_user_home }}/.config/fish/conf.d"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: "Initialize zoxide in fish with cd replacement (separate conf.d file)"
@@ -29,7 +29,7 @@
       # Managed by thomsible
       zoxide init fish --cmd cd | source
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
 
 - name: "Display zoxide setup info"

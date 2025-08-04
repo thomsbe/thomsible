@@ -12,16 +12,7 @@
 
 - name: "Warn about existing {{ tool_name }} installation"
   ansible.builtin.fail:
-    msg: |
-      ⚠️ {{ tool_name }} ist bereits installiert!
-      Gefunden in: {{ tool_check.stdout_lines | join(', ') }}
-      
-      Bitte entfernen Sie bestehende Installationen:
-      sudo apt remove {{ tool_name }}  # oder
-      sudo dnf remove {{ tool_name }}  # oder
-      rm {{ tool_check.stdout_lines[0] }}
-      
-      Dann erneut ausführen.
+    msg: "{{ tool_name }} already installed! Found in: {{ tool_check.stdout_lines | join(', ') }}. Please remove existing installations: sudo apt remove {{ tool_name }} OR sudo dnf remove {{ tool_name }} OR rm {{ tool_check.stdout_lines[0] }}, then run again."
   when: 
     - github_tools_check_conflicts | default(true)
     - tool_check.rc == 0
@@ -54,10 +45,7 @@
 
 - name: "Fail if no matching asset found for {{ tool_name }}"
   ansible.builtin.fail:
-    msg: |
-      Kein passendes Asset für {{ tool_name }} gefunden!
-      Pattern: {{ tool_config.asset_pattern }}
-      Verfügbare Assets: {{ release_info.json.assets | map(attribute='name') | list }}
+    msg: "No matching asset found for {{ tool_name }}! Pattern: {{ tool_config.asset_pattern }}, Available assets: {{ release_info.json.assets | map(attribute='name') | list }}"
   when: download_url is not defined
 
 - name: "Create temp directory for {{ tool_name }}"
@@ -105,7 +93,7 @@
     src: "{{ binary_path }}"
     dest: "{{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
     remote_src: true
 
@@ -123,7 +111,4 @@
 
 - name: "Display {{ tool_name }} installation result"
   ansible.builtin.debug:
-    msg: |
-      ✅ {{ tool_name }} {{ release_info.json.tag_name }} installiert
-      Binary: {{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}
-      {% if version_check.rc == 0 %}Version: {{ version_check.stdout | regex_search('([0-9]+\.[0-9]+\.[0-9]+)') | default('unknown') }}{% endif %}
+    msg: "{{ tool_name }} {{ release_info.json.tag_name }} installed. Binary: {{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}{% if version_check.rc == 0 %}, Version: {{ version_check.stdout | regex_search('([0-9]+\\.[0-9]+\\.[0-9]+)') | default('unknown') }}{% endif %}"

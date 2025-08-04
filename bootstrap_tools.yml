@@ -1,11 +1,12 @@
 ---
-# Tools-Only Bootstrap Playbook für thomsible
-# Installiert nur moderne CLI-Tools ohne Service-User
+# User Config + Tools Bootstrap Playbook für thomsible
+# Konfiguriert User (Fish shell, PATH) UND installiert moderne CLI-Tools
+# OHNE Service-User
 #
 # Verwendung:
-#   ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas"
+#   ansible-playbook bootstrap_tools.yml -e "target_user=thomas"
 
-- name: "Thomsible Tools-Only Bootstrap"
+- name: "Thomsible User Config + Tools Bootstrap"
   hosts: localhost
   connection: local
   become: true
@@ -54,12 +55,12 @@
         msg: "target_user must be explicitly defined! Example: ansible-playbook bootstrap_tools.yml -e 'target_user=thomas'"
       when: target_user is not defined or target_user == ""
 
-    - name: "Display tools-only bootstrap configuration"
+    - name: "Display user config + tools bootstrap configuration"
       ansible.builtin.debug:
-        msg: "THOMSIBLE TOOLS-ONLY BOOTSTRAP - Target: {{ target_user }}@{{ ansible_distribution }} {{ ansible_distribution_version }}, Will install: fish shell, {{ tools_to_install | length }} modern CLI tools, system tools, git config, shell integrations. NO service user will be created!"
+        msg: "THOMSIBLE USER CONFIG + TOOLS BOOTSTRAP - Target: {{ target_user }}@{{ ansible_distribution }} {{ ansible_distribution_version }}, Will configure: fish shell, PATH, then install: {{ tools_to_install | length }} modern CLI tools, system tools, git config, shell integrations. NO service user will be created!"
 
   roles:
-    # Target User Configuration
+    # Target User Configuration (Fish shell, PATH, etc.)
     - role: target_user_config
       tags: [target_user_config]
 
@@ -68,6 +69,6 @@
       tags: [modern_tools]
 
   post_tasks:
-    - name: "Tools-only bootstrap completion"
+    - name: "User config + tools bootstrap completion"
       ansible.builtin.debug:
-        msg: "TOOLS-ONLY BOOTSTRAP COMPLETED! Installed for {{ target_user }}: fish shell, {{ tools_to_install | length }} modern CLI tools, system tools, git config{% if create_shell_aliases %}, shell aliases{% endif %}. Next: logout/login, test tools, setup atuin. No service user created."
+        msg: "USER CONFIG + TOOLS BOOTSTRAP COMPLETED! Configured for {{ target_user }}: fish shell, PATH, then installed: {{ tools_to_install | length }} modern CLI tools, system tools, git config{% if create_shell_aliases %}, shell aliases{% endif %}. Next: logout/login, test tools, setup atuin. No service user created."

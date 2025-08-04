@@ -8,7 +8,7 @@
     path: "{{ target_user_home }}/.config"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: "Check if starship config exists (from yast dotfile sync)"
@@ -21,7 +21,7 @@
     src: "starship_basic.toml"
     dest: "{{ target_user_home }}/.config/starship.toml"
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
   when: not starship_config_exists.stat.exists
 
@@ -36,7 +36,7 @@
     regexp: ".*starship init bash.*"
     state: present
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     create: true
     mode: '0644'
 
@@ -45,7 +45,7 @@
     path: "{{ target_user_home }}/.config/fish/conf.d"
     state: directory
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0755'
 
 - name: "Initialize starship in fish (separate conf.d file)"
@@ -56,5 +56,5 @@
       # Managed by thomsible
       starship init fish | source
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'

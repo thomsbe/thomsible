@@ -26,7 +26,7 @@
       [core]
           editor = nano
     owner: "{{ target_user }}"
-    group: "{{ target_user }}"
+    group: "{{ target_user_group_name }}"
     mode: '0644'
   when: not gitconfig_exists.stat.exists
 

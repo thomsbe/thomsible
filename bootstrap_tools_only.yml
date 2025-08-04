@@ -1,0 +1,73 @@
+---
+# Tools-Only Bootstrap Playbook für thomsible
+# Installiert nur moderne CLI-Tools - KEINE User-Konfiguration
+# Annahme: User ist bereits konfiguriert (Fish shell, PATH, etc.)
+#
+# Verwendung:
+#   ansible-playbook bootstrap_tools_only.yml -e "target_user=thomas"
+
+- name: "Thomsible Tools-Only Bootstrap (No User Config)"
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  vars:
+    # WICHTIG: target_user muss explizit gesetzt werden!
+    # Beispiel: -e "target_user=thomas"
+
+    # Modern Tools Konfiguration
+    tools_to_install:
+      - lazygit
+      - starship
+      - btop
+      - fzf
+      - bat
+      - eza
+      - fd
+      - ripgrep
+      - dust
+      - procs
+      - zoxide
+      - atuin
+      - tealdeer
+      - duf
+      - gping
+      - dog
+      - termshark
+      - topgrade
+
+    # Features aktivieren
+    create_shell_aliases: true
+    install_system_tools: true
+    configure_git: true
+    setup_shell_integration: true
+    github_tools_check_conflicts: true
+
+    # GitHub Token (optional für höhere API-Limits)
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') | default('') }}"
+
+    # Starship Konfiguration kommt aus yast dotfile sync
+
+  pre_tasks:
+    - name: "Validate target_user is defined"
+      ansible.builtin.fail:
+        msg: "target_user must be explicitly defined! Example: ansible-playbook bootstrap_tools_only.yml -e 'target_user=thomas'"
+      when: target_user is not defined or target_user == ""
+
+    - name: "Get target user information"
+      ansible.builtin.include_tasks: roles/common/tasks/get_target_user_info.yml
+
+    - name: "Display tools-only bootstrap configuration"
+      ansible.builtin.debug:
+        msg: "THOMSIBLE TOOLS-ONLY BOOTSTRAP - Target: {{ target_user }}@{{ ansible_distribution }} {{ ansible_distribution_version }}, Will install: {{ tools_to_install | length }} modern CLI tools, system tools, git config, shell integrations. NO user configuration changes!"
+
+  roles:
+    # Modern Tools Installation ONLY
+    - role: modern_tools
+      tags: [modern_tools]
+
+  post_tasks:
+    - name: "Tools-only bootstrap completion"
+      ansible.builtin.debug:
+        msg: "TOOLS-ONLY BOOTSTRAP COMPLETED! Installed for {{ target_user }}: {{ tools_to_install | length }} modern CLI tools, system tools, git config{% if create_shell_aliases %}, shell aliases{% endif %}. Next: logout/login, test tools, setup atuin. NO user configuration was changed."
