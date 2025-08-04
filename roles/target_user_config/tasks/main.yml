@@ -7,10 +7,7 @@
 
 - name: "Validate target_user is defined"
   ansible.builtin.fail:
-    msg: |
-      target_user muss explizit definiert werden!
-      Beispiel: -e "target_user=thomas"
-      KEINE Auto-Erkennung mehr aus Sicherheitsgründen!
+    msg: "target_user must be explicitly defined! Example: -e 'target_user=thomas'. No auto-detection for security reasons!"
   when: target_user is not defined or target_user == ""
 
 - name: "Get target user information"
@@ -25,11 +22,7 @@
 
 - name: "Display target user configuration"
   ansible.builtin.debug:
-    msg: |
-      🎯 TARGET USER CONFIGURATION
-      User: {{ target_user }}
-      Home: {{ target_user_home }}
-      Shell wird auf fish gesetzt (außer root)
+    msg: "TARGET USER CONFIGURATION - User: {{ target_user }}, Home: {{ target_user_home }}, Shell will be set to fish (except root)"
 
 - name: "Install required packages for Ansible on Fedora"
   ansible.builtin.dnf:

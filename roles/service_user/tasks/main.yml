@@ -10,12 +10,7 @@
 
 - name: "Display service user configuration"
   ansible.builtin.debug:
-    msg: |
-      🔧 SERVICE USER CONFIGURATION
-      User: {{ ansible_user_name }}
-      SSH Key: {{ ansible_user_ssh_pubkey[:50] }}...
-      Sudo Group: {{ sudo_group }}
-      Shell: {{ service_user_shell }}
+    msg: "SERVICE USER CONFIGURATION - User: {{ ansible_user_name }}, Sudo Group: {{ sudo_group }}, Shell: {{ service_user_shell }}"
 
 - name: "Install required packages for Ansible on Fedora"
   ansible.builtin.dnf:
@@ -98,9 +93,4 @@
 
 - name: "Verify service user configuration"
   ansible.builtin.debug:
-    msg: |
-      ✅ Service User {{ ansible_user_name }} erfolgreich konfiguriert:
-      - SSH-Key installiert
-      - Passwortloses sudo aktiviert
-      - Passwort-Login deaktiviert
-      - Versteckt vor Login-Managern
+    msg: "Service User {{ ansible_user_name }} configured: SSH-Key installed, passwordless sudo enabled, password login disabled, hidden from login managers"

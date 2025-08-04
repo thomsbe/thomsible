@@ -68,10 +68,4 @@
 
 - name: "Display shell integration setup"
   ansible.builtin.debug:
-    msg: |
-      🐚 Shell-Integration konfiguriert:
-      - Bash aliases: ~/.bash_aliases
-      - Fish aliases: ~/.config/fish/conf.d/modern_tools_aliases.fish
-      {% if create_shell_aliases %}
-      - Moderne Ersetzungen aktiviert (cat→bat, ls→eza, etc.)
-      {% endif %}
+    msg: "Shell integration configured: bash aliases in ~/.bash_aliases, fish aliases in ~/.config/fish/conf.d/modern_tools_aliases.fish{% if create_shell_aliases %}, modern tool replacements activated{% endif %}"

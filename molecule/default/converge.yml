@@ -33,6 +33,22 @@
         asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
         archive_extension: "tar.gz"
         alias: "cat"
+
+      zoxide:
+        enabled: true
+        description: "Smart directory jumping"
+        category: "navigation"
+        repo: "ajeetdsouza/zoxide"
+        asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+        archive_extension: "tar.gz"
+
+      atuin:
+        enabled: true
+        description: "Shell history sync and search"
+        category: "shell"
+        repo: "atuinsh/atuin"
+        asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
+        archive_extension: "tar.gz"
       
   pre_tasks:
     - name: Debug tools_config

@@ -27,12 +27,7 @@
 
 - name: "Display starship config source"
   ansible.builtin.debug:
-    msg: |
-      {% if starship_config_exists.stat.exists %}
-      ✅ Starship config found - using existing (from yast dotfile sync)
-      {% else %}
-      📝 No starship config found - created basic fallback config
-      {% endif %}
+    msg: "{% if starship_config_exists.stat.exists %}Starship config found - using existing (from yast dotfile sync){% else %}No starship config found - created basic fallback config{% endif %}"
 
 - name: "Initialize starship in bash"
   ansible.builtin.lineinfile:
@@ -45,13 +40,21 @@
     create: true
     mode: '0644'
 
-- name: "Initialize starship in fish"
-  ansible.builtin.lineinfile:
-    path: "{{ target_user_home }}/.config/fish/config.fish"
-    line: 'starship init fish | source'
-    regexp: ".*starship init fish.*"
-    state: present
+- name: "Create fish conf.d directory"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config/fish/conf.d"
+    state: directory
     owner: "{{ target_user }}"
     group: "{{ target_user }}"
-    create: true
+    mode: '0755'
+
+- name: "Initialize starship in fish (separate conf.d file)"
+  ansible.builtin.copy:
+    dest: "{{ target_user_home }}/.config/fish/conf.d/starship.fish"
+    content: |
+      # Starship prompt initialization
+      # Managed by thomsible
+      starship init fish | source
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
     mode: '0644'

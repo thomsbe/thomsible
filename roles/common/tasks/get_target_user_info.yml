@@ -25,9 +25,5 @@
 
 - name: Debug target user information
   ansible.builtin.debug:
-    msg: |
-      Target user: {{ target_user }}
-      Home directory: {{ target_user_home }}
-      Primary group ID: {{ target_user_group }}
-      Primary group name: {{ target_user_group_name }}
+    msg: "Target user: {{ target_user }}, Home: {{ target_user_home }}, Group: {{ target_user_group_name }} ({{ target_user_group }})"
   when: ansible_verbosity >= 1

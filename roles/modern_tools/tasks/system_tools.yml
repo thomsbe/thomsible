@@ -37,11 +37,4 @@
 
 - name: "Display system tools installation"
   ansible.builtin.debug:
-    msg: |
-      📦 System Tools installiert:
-      - ncdu: Interaktive Festplattenspeicher-Analyse
-      - lshw: Hardware-Informationen
-      - mtr: Kombiniert ping und traceroute
-      - glances: System-Monitoring Dashboard
-      - magic-wormhole: Sichere Dateiübertragung
-      - unp: Universeller Archiv-Extraktor
+    msg: "System tools installed: ncdu (disk usage), lshw (hardware info), mtr (network tracing), glances (monitoring), magic-wormhole (file transfer), unp (archive extractor)"

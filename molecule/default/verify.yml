@@ -102,12 +102,4 @@
 
     - name: Display test summary
       ansible.builtin.debug:
-        msg: |
-          ✅ Thomsible verification completed successfully!
-          
-          Verified components:
-          - Test user (testuser) created
-          - .local/bin directory exists  
-          - Essential tools installed: lazygit, starship, bat
-          - Tools are functional (version checks pass)
-          - Fish shell configured with PATH
+        msg: "Thomsible verification completed successfully! Verified: test user created, .local/bin directory exists, essential tools installed (lazygit, starship, bat), tools functional, fish shell configured with PATH"

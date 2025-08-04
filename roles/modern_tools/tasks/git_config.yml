@@ -32,9 +32,4 @@
 
 - name: "Display git configuration"
   ansible.builtin.debug:
-    msg: |
-      🔧 Git konfiguriert für {{ target_user }}:
-      - Name: {{ target_user }}
-      - Email: {{ target_user }}@{{ ansible_hostname }}.local
-      - Default Branch: main
-      - Editor: nano
+    msg: "Git configured for {{ target_user }}: {{ target_user }}@{{ ansible_hostname }}.local, default branch main, editor nano"

@@ -47,8 +47,4 @@
       
     - name: Display side effect test results
       ansible.builtin.debug:
-        msg: |
-          🧪 Side effect tests completed:
-          - Individual tool installation: ✅
-          - Category-based installation: ✅
-          - Tools remain functional: ✅
+        msg: "Side effect tests completed: Individual tool installation, category-based installation, tools remain functional"

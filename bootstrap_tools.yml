@@ -51,29 +51,12 @@
   pre_tasks:
     - name: "Validate target_user is defined"
       ansible.builtin.fail:
-        msg: |
-          ❌ target_user muss explizit definiert werden!
-
-          Beispiel:
-          ansible-playbook bootstrap_tools_new.yml -e "target_user=thomas"
+        msg: "target_user must be explicitly defined! Example: ansible-playbook bootstrap_tools.yml -e 'target_user=thomas'"
       when: target_user is not defined or target_user == ""
 
     - name: "Display tools-only bootstrap configuration"
       ansible.builtin.debug:
-        msg: |
-          🛠️ THOMSIBLE TOOLS-ONLY BOOTSTRAP 🛠️
-
-          Target user: {{ target_user }}
-          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
-
-          This will install:
-          1. Fish shell and PATH configuration
-          2. {{ tools_to_install | length }} modern CLI tools
-          3. System tools (ncdu, lshw, mtr, etc.)
-          4. Git configuration
-          5. Shell aliases and integrations
-
-          NO service user will be created!
+        msg: "THOMSIBLE TOOLS-ONLY BOOTSTRAP - Target: {{ target_user }}@{{ ansible_distribution }} {{ ansible_distribution_version }}, Will install: fish shell, {{ tools_to_install | length }} modern CLI tools, system tools, git config, shell integrations. NO service user will be created!"
 
   roles:
     # Target User Configuration
@@ -87,21 +70,4 @@
   post_tasks:
     - name: "Tools-only bootstrap completion"
       ansible.builtin.debug:
-        msg: |
-          ✅ TOOLS-ONLY BOOTSTRAP COMPLETED! ✅
-
-          🎯 What was installed for {{ target_user }}:
-          - Fish shell with PATH configuration
-          - {{ tools_to_install | length }} modern CLI tools
-          - System tools: ncdu, lshw, mtr, glances, dstat
-          - Git configuration
-          {% if create_shell_aliases %}
-          - Shell aliases: cat→bat, ls→eza, du→dust, etc.
-          {% endif %}
-
-          🚀 Next steps:
-          1. Logout and login again (or: exec $SHELL)
-          2. Test tools: lazygit --version, btop --version
-          3. Setup atuin: atuin register, atuin login
-
-          💡 No service user was created - this is tools-only!
+        msg: "TOOLS-ONLY BOOTSTRAP COMPLETED! Installed for {{ target_user }}: fish shell, {{ tools_to_install | length }} modern CLI tools, system tools, git config{% if create_shell_aliases %}, shell aliases{% endif %}. Next: logout/login, test tools, setup atuin. No service user created."
