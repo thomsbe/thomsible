@@ -35,6 +35,15 @@
     create: true
   when: create_shell_aliases | default(true)
 
+- name: "Create fish config directory"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config/fish/conf.d"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+  when: create_shell_aliases | default(true)
+
 - name: "Create fish aliases file"
   ansible.builtin.copy:
     dest: "{{ target_user_home }}/.config/fish/conf.d/modern_tools_aliases.fish"

@@ -14,7 +14,7 @@
         description: "Terminal UI für Git"
         category: "development"
         repo: "jesseduffield/lazygit"
-        asset_pattern: ".*Linux_x86_64.tar.gz$"
+        asset_pattern: ".*linux_x86_64.tar.gz$"
         archive_extension: "tar.gz"
       
       starship:

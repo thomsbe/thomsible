@@ -9,8 +9,8 @@
       - lshw          # Hardware information
       - mtr           # Network tracing (traceroute + ping)
       - glances       # System monitoring
-      - dstat         # System statistics
       - python3-pip   # For Python tools
+      - pipx          # For Python applications
     state: present
     update_cache: true
   when: ansible_os_family == "Debian"
@@ -22,18 +22,18 @@
       - lshw          # Hardware information
       - mtr           # Network tracing (traceroute + ping)
       - glances       # System monitoring
-      - dstat         # System statistics
       - python3-pip   # For Python tools
+      - pipx          # For Python applications
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: "Install Python tools via pip"
-  ansible.builtin.pip:
-    name:
-      - magic-wormhole  # Secure file transfer
-      - unp             # Universal unpacker
-    state: present
-    executable: pip3
+- name: "Install Python tools via pipx"
+  ansible.builtin.shell: |
+    pipx install magic-wormhole
+    pipx install unp
+  register: pipx_install_result
+  failed_when: false
+  changed_when: "'already installed' not in pipx_install_result.stdout"
 
 - name: "Display system tools installation"
   ansible.builtin.debug:
@@ -43,6 +43,5 @@
       - lshw: Hardware-Informationen
       - mtr: Kombiniert ping und traceroute
       - glances: System-Monitoring Dashboard
-      - dstat: Live System-Statistiken
       - magic-wormhole: Sichere Dateiübertragung
       - unp: Universeller Archiv-Extraktor
