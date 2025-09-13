@@ -1,0 +1,45 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ubuntu2404-sssd
+    image: ubuntu:24.04
+    pre_build_image: false
+    dockerfile: ../common/Dockerfile.ubuntu
+    groups:
+      - debian_family
+      - sssd_test
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      host_key_checking: false
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        target_user: domainuser
+        ansible_user_name: thomsible
+        ansible_user_ssh_pubkey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaQP9YHqJ3Lq8yrqPHOT6HyVsYhp/QhgGkyo8pQ6qlm thomsible"
+
+verifier:
+  name: ansible
+
+scenario:
+  name: sssd_test
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - cleanup
+    - destroy

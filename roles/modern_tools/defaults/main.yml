@@ -80,6 +80,7 @@ tools_config:
     repo: "muesli/duf"
     asset_pattern: ".*linux_x86_64.tar.gz$"
     archive_extension: "tar.gz"
+    alias: "df"
 
   btop:
     enabled: true
@@ -98,7 +99,7 @@ tools_config:
     archive_extension: "zip"
 
   dog:
-    enabled: true
+    enabled: false
     description: "Command-line DNS client"
     category: "network"
     repo: "ogham/dog"
@@ -143,6 +144,14 @@ tools_config:
     category: "maintenance"
     repo: "topgrade-rs/topgrade"
     asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
+    archive_extension: "tar.gz"
+
+  gk:
+    enabled: true
+    description: "GitKraken CLI"
+    category: "development"
+    repo: "gitkraken/gk-cli"
+    asset_pattern: ".*linux_amd64.tar.gz$"
     archive_extension: "tar.gz"
 
   termshark:
@@ -194,7 +203,7 @@ system_tools:
     description: "Interactive disk usage analyzer"
     category: "system"
   lshw:
-    enabled: true  
+    enabled: true
     description: "Hardware information"
     category: "system"
   mtr:
@@ -209,8 +218,13 @@ system_tools:
     enabled: true
     description: "System statistics"
     category: "monitoring"
-  magic-wormhole:
+  gh:
     enabled: true
+    description: "GitHub CLI"
+    category: "development"
+    install_method: "package"
+  magic-wormhole:
+    enabled: false
     description: "Secure file transfer"
     category: "network"
     install_method: "pip"

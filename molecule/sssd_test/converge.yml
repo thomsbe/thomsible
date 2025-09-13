@@ -1,0 +1,43 @@
+---
+# SSSD/Domain User Test Playbook
+- name: Test SSSD/Domain User Support
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    target_user: domainuser
+
+  pre_tasks:
+    - name: Simulate SSSD environment by removing user from /etc/passwd
+      ansible.builtin.lineinfile:
+        path: /etc/passwd
+        regexp: "^{{ target_user }}:"
+        state: absent
+
+    - name: Create domain user home directory manually (simulating SSSD)
+      ansible.builtin.file:
+        path: "/home/{{ target_user }}"
+        state: directory
+        owner: 1001
+        group: 1001
+        mode: '0755'
+
+    - name: Create domain user entry via getent simulation
+      ansible.builtin.lineinfile:
+        path: /tmp/domain_user_sim
+        line: "{{ target_user }}:x:1001:1001:Domain User:/home/{{ target_user }}:/bin/bash"
+        create: true
+
+  roles:
+    # Test target_user_config with domain user
+    - role: ../../roles/target_user_config
+      tags: [target_user_config]
+
+    # Test modern_tools with domain user
+    - role: ../../roles/modern_tools
+      tags: [modern_tools]
+      vars:
+        install_system_tools: true
+        configure_git: true
+        setup_shell_integration: true

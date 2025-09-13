@@ -9,6 +9,7 @@
       - lshw          # Hardware information
       - mtr           # Network tracing (traceroute + ping)
       - glances       # System monitoring
+      - gh            # GitHub CLI
       - python3-pip   # For Python tools
       - pipx          # For Python applications
     state: present
@@ -22,6 +23,7 @@
       - lshw          # Hardware information
       - mtr           # Network tracing (traceroute + ping)
       - glances       # System monitoring
+      - gh            # GitHub CLI
       - python3-pip   # For Python tools
       - pipx          # For Python applications
     state: present
@@ -29,7 +31,6 @@
 
 - name: "Install Python tools via pipx"
   ansible.builtin.shell: |
-    pipx install magic-wormhole
     pipx install unp
   register: pipx_install_result
   failed_when: false
@@ -37,4 +38,4 @@
 
 - name: "Display system tools installation"
   ansible.builtin.debug:
-    msg: "System tools installed: ncdu (disk usage), lshw (hardware info), mtr (network tracing), glances (monitoring), magic-wormhole (file transfer), unp (archive extractor)"
+    msg: "System tools installed: ncdu (disk usage), lshw (hardware info), mtr (network tracing), glances (monitoring), gh (GitHub CLI), unp (archive extractor)"

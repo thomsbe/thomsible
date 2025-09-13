@@ -1,0 +1,22 @@
+---
+- name: Prepare SSSD test environment
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Create testuser for preparation
+      ansible.builtin.user:
+        name: domainuser
+        uid: 1001
+        group: users
+        home: /home/domainuser
+        shell: /bin/bash
+
+    - name: Install basic packages
+      ansible.builtin.package:
+        name:
+          - sudo
+          - curl
+          - wget
+        state: present

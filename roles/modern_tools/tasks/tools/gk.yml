@@ -1,0 +1,6 @@
+---
+# Install gk - GitKraken CLI
+# Configuration comes from defaults/main.yml -> tools_config.gk
+
+- name: "Install gk (GitKraken CLI) from GitHub"
+  ansible.builtin.include_tasks: ../github_tool_install.yml

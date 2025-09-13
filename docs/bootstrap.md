@@ -230,6 +230,21 @@ exec $SHELL
 # Oder logout/login
 ```
 
+**6. SSSD/Domain-Benutzer - Shell-Setting fehlschlägt**
+```bash
+# Symptom: "Set fish as default shell" schlägt fehl
+# ✅ LÖSUNG: Das ist normal! Die Installation läuft weiter.
+# Domain-Benutzer können nicht automatisch die Shell ändern.
+# Fish ist installiert, manuell mit 'fish' starten möglich.
+```
+
+**7. Benutzer nicht in /etc/passwd gefunden**
+```bash
+# Symptom: "target_user not found" bei SSSD/Active Directory
+# ✅ LÖSUNG: Automatischer Fallback auf getent und /home/username
+# Installation funktioniert trotzdem vollständig.
+```
+
 ### Logs und Debugging
 
 ```bash

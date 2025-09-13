@@ -4,6 +4,14 @@
 
 Alle Tools werden zentral in `roles/modern_tools/defaults/main.yml` verwaltet. Jedes Tool kann einzeln aktiviert/deaktiviert werden.
 
+### ✨ **NEU: Automatische Deinstallation**
+
+Bei `enabled: false` werden Tools nicht nur übersprungen, sondern auch **automatisch deinstalliert**, falls bereits installiert:
+
+- **GitHub-Tools**: Entfernung der Binärdateien aus `~/.local/bin`
+- **System-Tools**: Deinstallation via `apt remove`/`dnf remove`
+- **pipx-Tools**: Deinstallation via `pipx uninstall`
+
 ## 🔧 Ein- und Ausschalten von Tools
 
 ### Einzelne Tools deaktivieren
@@ -12,10 +20,12 @@ Alle Tools werden zentral in `roles/modern_tools/defaults/main.yml` verwaltet. J
 # In bootstrap.yml oder als Variable
 tools_config:
   btop:
-    enabled: false    # Deaktiviert btop
+    enabled: false    # Deinstalliert btop (falls installiert)
   termshark:
-    enabled: false    # Deaktiviert termshark
+    enabled: false    # Deinstalliert termshark (falls installiert)
 ```
+
+**Hinweis**: Bei der nächsten Ausführung werden deaktivierte Tools automatisch entfernt!
 
 ### Über Kommandozeile
 
@@ -31,7 +41,7 @@ ansible-playbook bootstrap.yml -e "target_user=thomas" \
 
 ## 📋 Tool-Übersicht
 
-### 🛠️ GitHub-Tools (18 Tools)
+### 🛠️ GitHub-Tools (17 Tools)
 
 | Tool | Status | Kategorie | Beschreibung | Alias |
 |------|--------|-----------|--------------|--------|
@@ -50,9 +60,10 @@ ansible-playbook bootstrap.yml -e "target_user=thomas" \
 | **tealdeer** | ✅ | documentation | Fast tldr client | `tldr` |
 | **duf** | ✅ | system | Modern df replacement | `df` |
 | **gping** | ✅ | network | Ping with graph | - |
-| **dog** | ✅ | network | Modern dig replacement | `dig` |
-| **termshark** | ✅ | network | Terminal Wireshark | - |
+| **gk** | ✅ | development | GitKraken CLI | - |
 | **topgrade** | ✅ | system | Universal system updater | `tg` |
+| **dog** | ❌ | network | Modern dig replacement | `dig` |
+| **termshark** | ❌ | network | Terminal Wireshark | - |
 
 ### 🖥️ System-Tools (7 Tools)
 
@@ -63,8 +74,9 @@ ansible-playbook bootstrap.yml -e "target_user=thomas" \
 | **mtr** | ✅ | network | Network diagnostic tool | Package Manager |
 | **glances** | ✅ | monitoring | System monitoring dashboard | Package Manager |
 | **dstat** | ✅ | monitoring | System statistics | Package Manager |
-| **magic-wormhole** | ✅ | network | Secure file transfer | pip |
-| **unp** | ✅ | file_tools | Universal archive extractor | pip |
+| **gh** | ✅ | development | GitHub CLI | Package Manager |
+| **unp** | ✅ | file_tools | Universal archive extractor | pipx |
+| **magic-wormhole** | ❌ | network | Secure file transfer | pipx |
 
 ## 🏷️ Tag-basierte Installation
 

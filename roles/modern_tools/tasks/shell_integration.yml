@@ -24,6 +24,20 @@
     mode: '0644'
   when: create_shell_aliases | default(true)
 
+- name: "Remove legacy grep alias from bash_aliases"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bash_aliases"
+    regexp: "^alias grep="
+    state: absent
+  when: create_shell_aliases | default(true)
+
+- name: "Remove legacy ps alias from bash_aliases"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.bash_aliases"
+    regexp: "^alias ps="
+    state: absent
+  when: create_shell_aliases | default(true)
+
 - name: "Ensure bash aliases are sourced in .bashrc"
   ansible.builtin.lineinfile:
     path: "{{ target_user_home }}/.bashrc"
@@ -64,6 +78,19 @@
     owner: "{{ target_user }}"
     group: "{{ target_user_group_name }}"
     mode: '0644'
+  when: create_shell_aliases | default(true)
+- name: "Remove legacy grep alias from fish config"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/conf.d/modern_tools_aliases.fish"
+    regexp: "^alias grep="
+    state: absent
+  when: create_shell_aliases | default(true)
+
+- name: "Remove legacy ps alias from fish config"
+  ansible.builtin.lineinfile:
+    path: "{{ target_user_home }}/.config/fish/conf.d/modern_tools_aliases.fish"
+    regexp: "^alias ps="
+    state: absent
   when: create_shell_aliases | default(true)
 
 - name: "Display shell integration setup"

@@ -1,0 +1,46 @@
+---
+# Remove disabled system tools
+# Diese tools werden über Paketmanager deinstalliert
+
+- name: "Generate list of system tools to remove"
+  ansible.builtin.set_fact:
+    system_tools_to_remove_list: "{{ system_tools | dict2items | selectattr('value.enabled', 'equalto', false) | map(attribute='key') | list }}"
+
+- name: "Remove disabled system tools on Debian/Ubuntu"
+  ansible.builtin.apt:
+    name: "{{ system_tools_to_remove_list }}"
+    state: absent
+    autoremove: true
+  when:
+    - ansible_os_family == "Debian"
+    - system_tools_to_remove_list | length > 0
+
+- name: "Remove disabled system tools on RedHat/Fedora"
+  ansible.builtin.dnf:
+    name: "{{ system_tools_to_remove_list }}"
+    state: absent
+  when:
+    - ansible_os_family == "RedHat"
+    - system_tools_to_remove_list | length > 0
+
+- name: "Remove disabled Python tools via pipx"
+  ansible.builtin.shell: |
+    {% for tool_name, tool_config in system_tools.items() %}
+    {% if not tool_config.enabled and tool_config.install_method | default('') == 'pip' %}
+    pipx uninstall {{ tool_name }} || true
+    {% endif %}
+    {% endfor %}
+  register: pipx_remove_result
+  failed_when: false
+  changed_when: "'Nothing to uninstall' not in pipx_remove_result.stdout"
+  when: system_tools | dict2items | selectattr('value.enabled', 'equalto', false) | selectattr('value.install_method', 'equalto', 'pip') | list | length > 0
+
+- name: "Display system tools removal result"
+  ansible.builtin.debug:
+    msg: "Removed system tools: {{ system_tools_to_remove_list | join(', ') }}"
+  when: system_tools_to_remove_list | length > 0
+
+- name: "No system tools to remove"
+  ansible.builtin.debug:
+    msg: "No system tools marked for removal (enabled=false)"
+  when: system_tools_to_remove_list | length == 0

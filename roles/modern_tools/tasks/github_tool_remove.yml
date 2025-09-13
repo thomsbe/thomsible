@@ -1,0 +1,40 @@
+---
+# Gemeinsame GitHub Tool Deinstallation
+# Wird von den einzelnen Tool-Dateien inkludiert
+# Parameter: tool_name, tool_config
+
+- name: "Check if {{ tool_name }} is installed"
+  ansible.builtin.stat:
+    path: "{{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}"
+  register: tool_binary_check
+
+- name: "Remove {{ tool_name }} binary"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}"
+    state: absent
+  when: tool_binary_check.stat.exists
+  notify: "{{ tool_name }} removed"
+
+- name: "Remove {{ tool_name }} shell integration files"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config/fish/conf.d/{{ tool_name }}.fish"
+    state: absent
+  when: tool_binary_check.stat.exists
+
+- name: "Remove {{ tool_name }} configuration directory"
+  ansible.builtin.file:
+    path: "{{ target_user_home }}/.config/{{ tool_name }}"
+    state: absent
+  when:
+    - tool_binary_check.stat.exists
+    - tool_config.remove_config_dir | default(false)
+
+- name: "Display {{ tool_name }} removal result"
+  ansible.builtin.debug:
+    msg: "{{ tool_name }} has been removed. Binary: {{ target_user_home }}/{{ github_tools_install_path }}/{{ tool_config.binary_name | default(tool_name) }}"
+  when: tool_binary_check.stat.exists
+
+- name: "Skip {{ tool_name }} removal - not installed"
+  ansible.builtin.debug:
+    msg: "{{ tool_name }} was not installed, skipping removal"
+  when: not tool_binary_check.stat.exists

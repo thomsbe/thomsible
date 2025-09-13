@@ -1,29 +1,63 @@
 ---
 # Common task to get target user information including primary group
 # This task should be included at the beginning of all target_user-aware roles
+# Supports both local users and SSSD/domain users
 
-- name: Get target user information
+- name: "Get target user information (try local passwd first)"
   ansible.builtin.getent:
     database: passwd
     key: "{{ target_user }}"
   register: target_user_info
+  failed_when: false
 
-- name: Set target user home directory and group
+- name: "Get target user info from getent (fallback for SSSD/domain users)"
+  ansible.builtin.shell: "getent passwd {{ target_user }}"
+  register: target_user_getent_fallback
+  failed_when: false
+  when: target_user_info.failed | default(false)
+
+- name: "Set target user home and group (local user)"
   ansible.builtin.set_fact:
     target_user_home: "{{ target_user_info.ansible_facts.getent_passwd[target_user][4] }}"
     target_user_group: "{{ target_user_info.ansible_facts.getent_passwd[target_user][2] }}"
+    target_user_type: "local"
+  when: not (target_user_info.failed | default(false))
 
-- name: Get target user group name
-  ansible.builtin.getent:
-    database: group
-    key: "{{ target_user_group }}"
-  register: target_user_group_info
-
-- name: Set target user group name
+- name: "Parse SSSD/domain user information"
   ansible.builtin.set_fact:
-    target_user_group_name: "{{ target_user_group_info.ansible_facts.getent_group.keys() | first }}"
+    target_user_home: "{{ target_user_getent_fallback.stdout.split(':')[5] }}"
+    target_user_group: "{{ target_user_getent_fallback.stdout.split(':')[3] }}"
+    target_user_type: "domain"
+  when:
+    - target_user_info.failed | default(false)
+    - target_user_getent_fallback.rc == 0
+    - target_user_getent_fallback.stdout != ""
 
-- name: Debug target user information
+- name: "Set fallback values if user not found"
+  ansible.builtin.set_fact:
+    target_user_home: "/home/{{ target_user }}"
+    target_user_group: "{{ target_user }}"
+    target_user_type: "fallback"
+  when:
+    - target_user_info.failed | default(false)
+    - (target_user_getent_fallback.failed | default(false)) or (target_user_getent_fallback.stdout == "")
+
+- name: "Get target user group name"
+  ansible.builtin.shell: "getent group {{ target_user_group }} | cut -d: -f1"
+  register: target_user_group_name_result
+  failed_when: false
+  changed_when: false
+
+- name: "Set target user group name"
+  ansible.builtin.set_fact:
+    target_user_group_name: "{{ target_user_group_name_result.stdout | default(target_user_group) }}"
+
+- name: "Debug target user information"
   ansible.builtin.debug:
-    msg: "Target user: {{ target_user }}, Home: {{ target_user_home }}, Group: {{ target_user_group_name }} ({{ target_user_group }})"
+    msg: |
+      Target user info:
+      - User: {{ target_user }}
+      - Home: {{ target_user_home }}
+      - Group: {{ target_user_group_name }} ({{ target_user_group }})
+      - Type: {{ target_user_type }}
   when: ansible_verbosity >= 1

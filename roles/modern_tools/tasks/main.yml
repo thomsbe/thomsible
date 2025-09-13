@@ -16,17 +16,22 @@
 - name: "Generate tools lists"
   ansible.builtin.set_fact:
     tools_to_install: "{{ tools_config | dict2items | selectattr('value.enabled', 'equalto', true) | map(attribute='key') | list }}"
+    tools_to_remove: "{{ tools_config | dict2items | selectattr('value.enabled', 'equalto', false) | map(attribute='key') | list }}"
     tools_with_aliases: "{{ tools_config | dict2items | selectattr('value.alias', 'defined') | selectattr('value.enabled', 'equalto', true) | list }}"
     system_tools_to_install: "{{ system_tools | dict2items | selectattr('value.enabled', 'equalto', true) | map(attribute='key') | list }}"
+    system_tools_to_remove: "{{ system_tools | dict2items | selectattr('value.enabled', 'equalto', false) | map(attribute='key') | list }}"
 
 - name: "Display modern tools configuration"
   ansible.builtin.debug:
     msg: |
-      🛠️ MODERN TOOLS INSTALLATION
+      🛠️ MODERN TOOLS MANAGEMENT
       Target User: {{ target_user }}
       Home: {{ target_user_home }}
       Install Path: {{ target_user_home }}/{{ github_tools_install_path }}
       Tools to install: {{ tools_to_install | length }} tools
+      Tools to remove: {{ tools_to_remove | length }} tools
+      System tools to install: {{ system_tools_to_install | length }} tools
+      System tools to remove: {{ system_tools_to_remove | length }} tools
 
 - name: "Install required packages for Ansible on Fedora"
   ansible.builtin.dnf:
@@ -53,14 +58,40 @@
   vars:
     tool_name: "{{ tool_item.key }}"
     tool_config: "{{ tool_item.value }}"
-  tags: 
+    tool_action: "install"
+  tags:
     - github_tools
 
-# System Tools
+# Dynamic GitHub Tools Removal
+# Remove tools that are marked as enabled=false
+- name: "Remove disabled GitHub tools"
+  ansible.builtin.include_tasks: github_tool_remove.yml
+  loop: "{{ tools_config | dict2items | selectattr('value.enabled', 'equalto', false) }}"
+  loop_control:
+    loop_var: tool_item
+  vars:
+    tool_name: "{{ tool_item.key }}"
+    tool_config: "{{ tool_item.value }}"
+  when: tools_to_remove | length > 0
+  tags:
+    - github_tools
+    - remove_tools
+
+# System Tools Installation
 - name: "Install system tools"
   ansible.builtin.include_tasks: system_tools.yml
   when: install_system_tools | default(true)
   tags: [system_tools]
+
+# System Tools Removal
+- name: "Remove disabled system tools"
+  ansible.builtin.include_tasks: system_tools_remove.yml
+  when:
+    - install_system_tools | default(true)
+    - system_tools_to_remove | length > 0
+  tags:
+    - system_tools
+    - remove_tools
 
 # Git configuration
 - name: "Configure git"

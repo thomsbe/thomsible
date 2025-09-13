@@ -1,0 +1,73 @@
+---
+# Verify SSSD/Domain User functionality
+- name: Verify SSSD/Domain User Support
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check domain user home directory exists
+      ansible.builtin.stat:
+        path: "/home/domainuser"
+      register: domain_home_check
+
+    - name: Assert domain user home exists
+      ansible.builtin.assert:
+        that:
+          - domain_home_check.stat.exists
+          - domain_home_check.stat.isdir
+        fail_msg: "Domain user home directory not found"
+        success_msg: "Domain user home directory exists"
+
+    - name: Check .local/bin directory was created
+      ansible.builtin.stat:
+        path: "/home/domainuser/.local/bin"
+      register: domain_local_bin_check
+
+    - name: Assert .local/bin directory exists
+      ansible.builtin.assert:
+        that:
+          - domain_local_bin_check.stat.exists
+          - domain_local_bin_check.stat.isdir
+        fail_msg: "Domain user .local/bin directory missing"
+        success_msg: "Domain user .local/bin directory exists"
+
+    - name: Check fish config was created
+      ansible.builtin.stat:
+        path: "/home/domainuser/.config/fish/config.fish"
+      register: domain_fish_check
+
+    - name: Assert fish configuration exists
+      ansible.builtin.assert:
+        that:
+          - domain_fish_check.stat.exists
+        fail_msg: "Domain user fish configuration missing"
+        success_msg: "Domain user fish configuration exists"
+
+    - name: Check tools were installed for domain user
+      ansible.builtin.stat:
+        path: "/home/domainuser/.local/bin/{{ item }}"
+      register: domain_tools_check
+      loop:
+        - lazygit
+        - starship
+        - bat
+
+    - name: Assert tools are installed for domain user
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.executable
+        fail_msg: "Tool {{ item.item }} not installed for domain user"
+        success_msg: "Tool {{ item.item }} installed for domain user"
+      loop: "{{ domain_tools_check.results }}"
+
+    - name: Display SSSD test summary
+      ansible.builtin.debug:
+        msg: |
+          🎉 SSSD/DOMAIN USER TEST COMPLETED SUCCESSFULLY!
+          ✅ Domain user home directory handling works
+          ✅ .local/bin directory created correctly
+          ✅ Fish shell configuration installed
+          ✅ Tools installed despite missing /etc/passwd entry
+          ✅ Fallback mechanisms working correctly

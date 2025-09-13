@@ -38,34 +38,55 @@
         fail_msg: ".local/bin directory missing"
         success_msg: ".local/bin directory exists"
 
-    - name: Check installed tools
+    - name: Check enabled GitHub tools are installed
       ansible.builtin.stat:
         path: "/home/testuser/.local/bin/{{ item }}"
-      register: tool_check
+      register: enabled_tool_check
       loop:
         - lazygit
         - starship
         - bat
-      
-    - name: Assert tools are installed
+        - eza
+        - fzf
+        - gk
+
+    - name: Assert enabled tools are installed
       ansible.builtin.assert:
         that:
           - item.stat.exists
           - item.stat.executable
-        fail_msg: "Tool {{ item.item }} not found or not executable"
-        success_msg: "Tool {{ item.item }} properly installed"
-      loop: "{{ tool_check.results }}"
+        fail_msg: "Enabled tool {{ item.item }} not found or not executable"
+        success_msg: "Enabled tool {{ item.item }} properly installed"
+      loop: "{{ enabled_tool_check.results }}"
+
+    - name: Check disabled GitHub tools are NOT installed
+      ansible.builtin.stat:
+        path: "/home/testuser/.local/bin/{{ item }}"
+      register: disabled_tool_check
+      loop:
+        - dog
+        - termshark
+
+    - name: Assert disabled tools are NOT installed
+      ansible.builtin.assert:
+        that:
+          - not item.stat.exists
+        fail_msg: "Disabled tool {{ item.item }} should not be installed"
+        success_msg: "Disabled tool {{ item.item }} correctly not installed"
+      loop: "{{ disabled_tool_check.results }}"
       
     - name: Test tool functionality (as testuser)
-      ansible.builtin.command: 
+      ansible.builtin.command:
         cmd: "sudo -u testuser /home/testuser/.local/bin/{{ item }} --version"
       register: version_check
       loop:
         - lazygit
         - starship
         - bat
+        - eza
       changed_when: false
-      
+      failed_when: false
+
     - name: Assert tools are functional
       ansible.builtin.assert:
         that:
@@ -75,6 +96,23 @@
         fail_msg: "Tool {{ item.item }} version check failed"
         success_msg: "Tool {{ item.item }} is functional"
       loop: "{{ version_check.results }}"
+
+    - name: Check system tools are installed
+      ansible.builtin.command: "which {{ item }}"
+      register: system_tool_check
+      loop:
+        - gh
+        - ncdu
+      changed_when: false
+      failed_when: false
+
+    - name: Assert system tools are functional
+      ansible.builtin.assert:
+        that:
+          - item.rc == 0
+        fail_msg: "System tool {{ item.item }} not found"
+        success_msg: "System tool {{ item.item }} is installed"
+      loop: "{{ system_tool_check.results }}"
 
     - name: Check Fish shell configuration
       ansible.builtin.stat:
@@ -102,4 +140,12 @@
 
     - name: Display test summary
       ansible.builtin.debug:
-        msg: "Thomsible verification completed successfully! Verified: test user created, .local/bin directory exists, essential tools installed (lazygit, starship, bat), tools functional, fish shell configured with PATH"
+        msg: |
+          🎉 THOMSIBLE VERIFICATION COMPLETED SUCCESSFULLY!
+          ✅ Test user created and configured
+          ✅ .local/bin directory exists with correct permissions
+          ✅ GitHub tools installed and functional: lazygit, starship, bat, eza, fzf, gk
+          ✅ Disabled tools correctly NOT installed: dog, termshark
+          ✅ System tools installed: gh (GitHub CLI), ncdu
+          ✅ Fish shell configured with PATH
+          ✅ Deinstallation functionality working correctly

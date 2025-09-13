@@ -7,48 +7,40 @@
   
   vars:
     target_user: testuser
-    # Extended tool config for full testing
+
+    # Test deinstallation functionality with disabled tools
     tools_config:
+      # Core tools for testing (enabled)
       lazygit:
         enabled: true
-        description: "Terminal UI für Git"
-        category: "development"
-        repo: "jesseduffield/lazygit"
-        asset_pattern: ".*linux_x86_64.tar.gz$"
-        archive_extension: "tar.gz"
-      
       starship:
         enabled: true
-        description: "Cross-shell prompt"
-        category: "shell"
-        repo: "starship/starship"  
-        asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
-        archive_extension: "tar.gz"
-      
       bat:
         enabled: true
-        description: "Cat with syntax highlighting"
-        category: "file_tools"
-        repo: "sharkdp/bat"
-        asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
-        archive_extension: "tar.gz"
-        alias: "cat"
-
-      zoxide:
+      eza:
         enabled: true
-        description: "Smart directory jumping"
-        category: "navigation"
-        repo: "ajeetdsouza/zoxide"
-        asset_pattern: ".*x86_64-unknown-linux-musl.tar.gz$"
-        archive_extension: "tar.gz"
-
-      atuin:
+      fzf:
         enabled: true
-        description: "Shell history sync and search"
-        category: "shell"
-        repo: "atuinsh/atuin"
-        asset_pattern: ".*x86_64-unknown-linux-gnu.tar.gz$"
-        archive_extension: "tar.gz"
+
+      # Test deinstallation (disabled)
+      dog:
+        enabled: false
+      termshark:
+        enabled: false
+
+      # Test new tools
+      gk:
+        enabled: true
+
+    # Test system tools
+    system_tools:
+      gh:
+        enabled: true
+      ncdu:
+        enabled: true
+      # Test system tool deinstallation
+      magic-wormhole:
+        enabled: false
       
   pre_tasks:
     - name: Debug tools_config
